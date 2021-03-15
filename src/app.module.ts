@@ -11,6 +11,9 @@ import { NoticeModule } from './notice/notice.module';
 import { TestOperationModule } from './test-operation/test-operation.module';
 import { FormAdminModule } from './form-admin/form-admin.module';
 import { FormSatisfactionModule } from './form-satisfaction/form-satisfaction.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -18,6 +21,20 @@ import { FormSatisfactionModule } from './form-satisfaction/form-satisfaction.mo
     TypeOrmModule.forRoot(),
     MulterModule.register({
       dest: './public',
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'dev' ? '.dev.env' : '.prod.env',
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'localhost',
+        port: 25,
+        secure: false,
+      },
+      defaults: {
+        from: '"contact" <contact@hlabtech.com>',
+      },
     }),
     FileModule,
     RequestModule,
@@ -27,6 +44,7 @@ import { FormSatisfactionModule } from './form-satisfaction/form-satisfaction.mo
     TestOperationModule,
     FormAdminModule,
     FormSatisfactionModule,
+    AuthModule,
   ],
   controllers: [AppController],
 })
