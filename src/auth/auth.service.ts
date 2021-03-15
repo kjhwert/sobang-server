@@ -28,6 +28,7 @@ export class AuthService {
       updatedAt,
       updatedId,
       password,
+      isAdmin,
       type,
       ...rest
     } = user;
