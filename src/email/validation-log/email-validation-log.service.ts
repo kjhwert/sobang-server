@@ -11,6 +11,21 @@ export class EmailValidationLogService {
     private emailRepository: Repository<EmailValidationLog>,
   ) {}
 
+  async isValidated(email: string, code: string): Promise<boolean> {
+    const count = await this.emailRepository
+      .createQueryBuilder()
+      .where('email = :email')
+      .andWhere('code = :code')
+      .setParameters({ email, code })
+      .getCount();
+
+    if (count > 0) {
+      return true;
+    }
+
+    return false;
+  }
+
   async create(
     email: string,
   ): Promise<{

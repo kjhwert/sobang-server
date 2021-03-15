@@ -1,4 +1,4 @@
-export default (email: string, authorization: string) => {
+export default (email: string, code: string) => {
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -59,7 +59,7 @@ export default (email: string, authorization: string) => {
           <table align="center" cellpadding="0" cellspacing="0" width="600">
             <!-- header -->
             <tr class="headerWrap">
-              <td>국립소방연구원 이메일 인증 안내</td>
+              <td>국립소방연구원 임시 비밀번호 제공 안내</td>
             </tr>
 
             <!-- content -->
@@ -117,10 +117,10 @@ export default (email: string, authorization: string) => {
                             width="30%"
                             style="font-size: 14px; padding-left: 10px"
                           >
-                            인증코드
+                            임시 비밀번호
                           </td>
                           <td style="font-size: 14px; font-weight: bold">
-                            ${authorization}
+                            ${code}
                           </td>
                         </tr>
                       </table>

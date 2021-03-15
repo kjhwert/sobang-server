@@ -4,7 +4,7 @@ export class CommonEntity {
   @Column({ default: 1 })
   status: number;
 
-  @Column()
+  @Column({ nullable: true })
   createdId: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

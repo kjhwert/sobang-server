@@ -18,7 +18,7 @@ export class User extends CommonEntity {
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 100 })
+  @Column({ length: 100, unique: true })
   email: string;
 
   @ApiProperty()
@@ -28,22 +28,22 @@ export class User extends CommonEntity {
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 50 })
+  @Column({ length: 50, nullable: true })
   name: string;
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 50 })
+  @Column({ length: 50, nullable: true })
   businessName: string;
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 50 })
+  @Column({ length: 50, nullable: true })
   businessOwner: string;
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 50 })
+  @Column({ length: 50, nullable: true })
   businessNo: string;
 
   @ApiProperty()
