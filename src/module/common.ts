@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
+export const MAIN_INDEX_ROW = 4;
 export const PER_PAGE = 10;
 export const SKIP_PAGE = (page: number) => {
   return (page - 1) * PER_PAGE;
@@ -30,8 +31,8 @@ export const pagination = (page: number, total = 0) => {
 };
 
 export const responseOk = (
-  data,
-  paging = {},
+  data = null,
+  paging = null,
   message = '',
   statusCode = HttpStatus.OK,
 ) => ({

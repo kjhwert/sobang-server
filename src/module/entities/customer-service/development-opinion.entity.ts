@@ -5,7 +5,7 @@ import { IsNumber, IsString } from 'class-validator';
 import { User } from '../user/user.entity';
 
 @Entity()
-export class developmentOpinion extends CommonEntity {
+export class DevelopmentOpinion extends CommonEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
