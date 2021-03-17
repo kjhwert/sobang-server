@@ -48,7 +48,7 @@ export const responseOk = (
 export const responseCreated = (
   data = {},
   message = '등록되었습니다.',
-  statusCode = HttpStatus.CREATED,
+  statusCode = HttpStatus.OK,
 ) => ({
   statusCode,
   message,

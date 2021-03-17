@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -35,5 +36,14 @@ export class NoticeController {
   @Post()
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
-  create(@Body() data: createNoticeDto, @Request() { user }) {}
+  create(@Body() data: createNoticeDto, @Request() { user }) {
+    return this.noticeService.create(user.id, data);
+  }
+
+  @Delete()
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  destroy(@Param('id') id: number, @Request() { user }) {
+    return this.noticeService.destroy(user.id, id);
+  }
 }

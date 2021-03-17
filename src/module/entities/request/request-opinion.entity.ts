@@ -6,7 +6,7 @@ import { Request } from './request.entity';
 import { User } from '../user/user.entity';
 
 @Entity()
-export class requestOpinion extends CommonEntity {
+export class RequestOpinion extends CommonEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DevelopmentOpinion } from '../module/entities/customer-service/development-opinion.entity';
 import { Repository } from 'typeorm';
 import { createDevOpinionDto } from '../module/DTOs/development-opinion.dto';
-import { responseNotAcceptable, responseOk } from '../module/common';
+import {
+  responseCreated,
+  responseNotAcceptable,
+  responseOk,
+} from '../module/common';
 
 @Injectable()
 export class DevelopmentOpinionService {
@@ -17,7 +21,7 @@ export class DevelopmentOpinionService {
       const newOpinion = await this.devOpinionRepository.create(data);
       await this.devOpinionRepository.save(newOpinion);
 
-      return responseOk(null, null, '등록 되었습니다.');
+      return responseCreated();
     } catch (e) {
       return responseNotAcceptable(e.message);
     }

@@ -1,9 +1,10 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
+import { CommonEntity } from './common.entity';
 
 @Entity({ name: 'file' })
-export class FileEntity {
+export class FileEntity extends CommonEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,6 +25,6 @@ export class FileEntity {
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 10 })
+  @Column({ length: 20 })
   type: string;
 }

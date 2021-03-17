@@ -6,7 +6,7 @@ import { IsNumber } from 'class-validator';
 import { User } from '../user/user.entity';
 
 @Entity()
-export class requestAdvisory extends CommonEntity {
+export class RequestAdvisory extends CommonEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

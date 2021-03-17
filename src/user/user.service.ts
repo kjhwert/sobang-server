@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../module/entities/user/user.entity';
 import { Repository } from 'typeorm';
 import { Code } from '../module/entities/code.entity';
-import { responseNotAcceptable, responseOk } from '../module/common';
+import {
+  responseCreated,
+  responseNotAcceptable,
+  responseOk,
+} from '../module/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { EmailValidationLogService } from '../email/validation-log/email-validation-log.service';
 import emailValidationForm from '../module/emailForm/emailValidationForm';
@@ -128,7 +132,7 @@ export class UserService {
       const newUser = await this.userRepository.create({ ...data, type });
       await this.userRepository.save(newUser);
 
-      return responseOk({}, {}, '등록 되었습니다.');
+      return responseCreated();
     } catch (e) {
       return responseNotAcceptable(e.message);
     }

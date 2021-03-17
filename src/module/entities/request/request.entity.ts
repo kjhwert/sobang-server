@@ -6,6 +6,7 @@ import { EquipmentCode } from '../equipment-code.entity';
 import { FileEntity } from '../file.entity';
 import { Code } from '../code.entity';
 import { TestCode } from '../test-code.entity';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Request extends CommonEntity {
@@ -29,6 +30,11 @@ export class Request extends CommonEntity {
   @IsString()
   @Column({ length: 50, comment: '제품/서비스 명' })
   equipmentName: string;
+
+  @ApiProperty()
+  @IsString()
+  @Column({ length: 50, comment: '테스트 유형' })
+  requestType: string;
 
   @ApiProperty()
   @IsString()
@@ -96,6 +102,12 @@ export class Request extends CommonEntity {
   )
   process: Code | number = 6;
 
+  @ManyToOne(
+    () => User,
+    user => user.id,
+  )
+  user: number;
+
   @ApiProperty()
   @IsString()
   @Column({ type: 'text', nullable: true, comment: '반려 사유' })
@@ -118,7 +130,7 @@ export class Request extends CommonEntity {
   @IsString()
   @Column({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    nullable: true,
     comment: '평가 시작시간',
   })
   responseStartDate: Date;
@@ -127,13 +139,13 @@ export class Request extends CommonEntity {
   @IsString()
   @Column({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
+    nullable: true,
     comment: '평가 종료시간',
   })
   responseEndDate: Date;
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 50, comment: '평가 장소' })
+  @Column({ length: 50, comment: '평가 장소', nullable: true })
   responsePlace: string;
 }

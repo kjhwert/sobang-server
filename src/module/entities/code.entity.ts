@@ -11,6 +11,7 @@ export class Code {
   static PROCESS_APPROVE = 7;
   static PROCESS_REJECT = 8;
   static PROCESS_COMPLETE = 9;
+  static PROCESS_ALL = 10;
 
   @PrimaryGeneratedColumn()
   id: number;

@@ -5,7 +5,10 @@ import { IJwtPayload } from '../../module/type/common';
 import { Code } from '../../module/entities/code.entity';
 
 @Injectable()
-export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
+export class JwtOrganizationStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-organization',
+) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -15,8 +18,8 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
   }
 
   validate(payload: IJwtPayload) {
-    if (payload.type.id !== Code.ADMIN) {
-      throw new UnauthorizedException('', '관리자가 아닙니다.');
+    if (payload.type.id !== Code.ORGANIZATION) {
+      throw new UnauthorizedException('', '기관 회원이 아닙니다.');
     }
 
     return payload;
