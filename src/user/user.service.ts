@@ -75,11 +75,13 @@ export class UserService {
     }
   }
 
-  async findUserEmail(
-    type: number,
-    { name, businessNo, businessOwner }: findUserEmailDto,
-  ) {
-    if (type === Code.ORGANIZATION) {
+  async findUserEmail({
+    name,
+    businessNo,
+    businessOwner,
+    type,
+  }: findUserEmailDto) {
+    if (Number(type) === Code.ORGANIZATION) {
       const user = await this.userRepository
         .createQueryBuilder()
         .where('typeId = :type')

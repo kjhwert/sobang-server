@@ -1,32 +1,64 @@
 import { User } from '../entities/user/user.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class loginUserDto extends PickType(User, ['email', 'password']) {}
 
+export class emailValidationDto {
+  @ApiProperty({
+    description: '해당 이메일로 인증코드가 발송됩니다.',
+  })
+  @IsString()
+  email: string;
+}
+
 export class findUserEmailDto {
-  @ApiProperty({ enum: ['organization', 'advisory'] })
+  @ApiProperty({
+    enum: [3, 4],
+    format: '회원유형 분류',
+    description: '3: 기관회원, 4: 자문단 회원',
+  })
   @IsString()
   type: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    format: '자문단 회원',
+    description: '자문단 회원 명',
+  })
   @IsString()
   @IsOptional()
   name?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    format: '기관 회원',
+    description: '기관 대표자명',
+  })
   @IsString()
   @IsOptional()
   businessOwner?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    format: '기관 회원',
+    description: '기관 사업자 번호',
+  })
   @IsString()
   @IsOptional()
   businessNo?: string;
 }
 
 export class createUserDto {
-  @ApiProperty()
+  @ApiProperty({
+    enum: [3, 4],
+    format: '회원유형 분류',
+    description: '3: 기관회원, 4: 자문단 회원',
+  })
+  @IsNumber()
+  type: number;
+
+  @ApiProperty({ description: '이메일로 받은 인증코드' })
   @IsString()
   code: string;
 
@@ -34,29 +66,41 @@ export class createUserDto {
   @IsString()
   email: string;
 
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  name?: string; // 자문단 회원
-
   @ApiProperty()
   @IsString()
   password: string;
 
+  @ApiProperty({
+    required: false,
+    format: '자문단 회원',
+    description: '자문단 회원 성함',
+  })
+  @IsString()
+  @IsOptional()
+  name?: string; // 자문단 회원
+
   /**
    * 기관회원
    * */
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, format: '기관 회원', description: '기관 명' })
   @IsString()
   @IsOptional()
   businessName?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    format: '기관 회원',
+    description: '기관 대표자명',
+  })
   @IsString()
   @IsOptional()
   businessOwner?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    format: '기관 회원',
+    description: '기관 사업자 번호',
+  })
   @IsString()
   @IsOptional()
   businessNo?: string;
