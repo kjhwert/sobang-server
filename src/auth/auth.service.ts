@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { responseNotAcceptable, responseOk } from '../module/common';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '../module/entities/user/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string) {
     const user = await this.userService.findByEmail(email);
+
     if (!user) {
       return responseNotAcceptable('존재하지 않는 계정입니다.');
     }
@@ -28,10 +30,10 @@ export class AuthService {
       updatedAt,
       updatedId,
       password,
-      isAdmin,
       type,
       ...rest
     } = user;
+
     return responseOk({
       ...rest,
       accessToken: this.jwtService.sign({

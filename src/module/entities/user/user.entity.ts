@@ -47,11 +47,6 @@ export class User extends CommonEntity {
   businessNo: string;
 
   @ApiProperty()
-  @IsBoolean()
-  @Column({ type: 'boolean', default: () => false })
-  isAdmin: boolean;
-
-  @ApiProperty()
   @IsNumber()
   @ManyToOne(
     () => Code,

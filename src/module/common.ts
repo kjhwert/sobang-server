@@ -1,4 +1,7 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, SetMetadata } from '@nestjs/common';
+
+export const IS_PUBLIC_KEY = 'isPublic';
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 export const MAIN_INDEX_ROW = 4;
 export const PER_PAGE = 10;

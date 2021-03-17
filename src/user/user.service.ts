@@ -134,11 +134,12 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     return await this.userRepository
-      .createQueryBuilder()
-      .where('email = :email')
-      .andWhere('status = :act')
+      .createQueryBuilder('u')
+      .innerJoinAndSelect('u.type', 't')
+      .where('u.email = :email')
+      .andWhere('u.status = :act')
       .setParameters({ email, act: Code.ACT })
       .getOne();
   }
