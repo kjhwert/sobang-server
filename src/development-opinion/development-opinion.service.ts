@@ -4,10 +4,12 @@ import { DevelopmentOpinion } from '../module/entities/customer-service/developm
 import { Repository } from 'typeorm';
 import { createDevOpinionDto } from '../module/DTOs/development-opinion.dto';
 import {
+  pagination,
   responseCreated,
   responseNotAcceptable,
   responseOk,
 } from '../module/common';
+import { Code } from '../module/entities/code.entity';
 
 @Injectable()
 export class DevelopmentOpinionService {
@@ -15,6 +17,24 @@ export class DevelopmentOpinionService {
     @InjectRepository(DevelopmentOpinion)
     private devOpinionRepository: Repository<DevelopmentOpinion>,
   ) {}
+
+  async index(page: number) {
+    const total = await this.getIndexCount();
+    const paging = await pagination(page, total);
+
+    const data = await this.devOpinionRepository.createQueryBuilder().getMany();
+
+    return responseOk(data, paging);
+  }
+
+  async getIndexCount() {
+    return await this.devOpinionRepository
+      .createQueryBuilder()
+      .where('status = :act', { act: Code.ACT })
+      .getCount();
+  }
+
+  async show(opinionId: number) {}
 
   async create(data: createDevOpinionDto) {
     try {

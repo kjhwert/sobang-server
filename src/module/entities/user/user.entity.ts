@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CommonEntity } from '../common.entity';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
 import { Code } from '../code.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -23,7 +23,7 @@ export class User extends CommonEntity {
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 100, select: false })
+  @Column({ length: 100 })
   password: string;
 
   @ApiProperty()

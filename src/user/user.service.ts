@@ -32,6 +32,18 @@ export class UserService {
   async index({ type, name }: indexUserDto) {
     const data = await this.userRepository
       .createQueryBuilder()
+      .select([
+        'id',
+        'email',
+        'name',
+        'businessName',
+        'businessOwner',
+        'businessNo',
+        'department',
+        'position',
+        'createdAt',
+        'updatedAt',
+      ])
       .where('status = :act')
       .andWhere('typeId = :type')
       .andWhere(
@@ -40,7 +52,7 @@ export class UserService {
         ),
       )
       .setParameters({ type, name: `%${name}%`, act: Code.ACT })
-      .getMany();
+      .getRawMany();
 
     return responseOk(data);
   }
