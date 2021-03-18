@@ -2,6 +2,11 @@ import { User } from '../entities/user/user.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
+export class searchAdvisoryUserDto {
+  @ApiProperty({ description: '자문단 매칭시 자문단 회원 명으로 검색' })
+  name: string;
+}
+
 export class indexUserDto {
   @ApiProperty({
     enum: [3, 4, 5],

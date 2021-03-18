@@ -19,6 +19,7 @@ import {
   findUserEmailDto,
   indexUserDto,
   loginUserDto,
+  searchAdvisoryUserDto,
 } from '../module/DTOs/user.dto';
 import { Code } from '../module/entities/code.entity';
 import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
@@ -39,6 +40,13 @@ export class UserController {
   @Get()
   index(@Query() data: indexUserDto) {
     return this.userService.index(data);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Get('search-advisory')
+  searchAdvisory(@Query() { name }: searchAdvisoryUserDto) {
+    return this.userService.searchAdvisory(name);
   }
 
   @Post('create')

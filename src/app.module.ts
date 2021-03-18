@@ -15,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { NavigationModule } from './navigation/navigation.module';
+import { TestCodeModule } from './test-code/test-code.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { NavigationModule } from './navigation/navigation.module';
     FormSatisfactionModule,
     AuthModule,
     NavigationModule,
+    TestCodeModule,
   ],
   controllers: [AppController],
 })

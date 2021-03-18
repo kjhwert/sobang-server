@@ -57,6 +57,19 @@ export class UserService {
     return responseOk(data);
   }
 
+  async searchAdvisory(name: string) {
+    const data = await this.userRepository
+      .createQueryBuilder()
+      .select(['id', 'name'])
+      .where('status = :act')
+      .andWhere('typeId = :type')
+      .andWhere('name like :name')
+      .setParameters({ act: Code.ACT, type: Code.ADVISORY, name: `%${name}%` })
+      .getRawMany();
+
+    return responseOk(data);
+  }
+
   async createAdmin(adminId: number, data: createAdminUserDto) {
     const hasEmail = await this.hasEmail(data.email);
     if (hasEmail) {

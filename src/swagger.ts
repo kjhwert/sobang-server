@@ -11,5 +11,6 @@ export const swaggerOptions = new DocumentBuilder()
   .addTag('faq', '자주 묻는 질문')
   .addTag('dev-opinion', '서비스 개선의견')
   .addTag('navigation', '링크 설정')
+  .addTag('test-code', '테스트 유형')
   .addTag('file', '첨부파일')
   .build();
