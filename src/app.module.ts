@@ -14,6 +14,7 @@ import { FormSatisfactionModule } from './form-satisfaction/form-satisfaction.mo
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { NavigationModule } from './navigation/navigation.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     FormAdminModule,
     FormSatisfactionModule,
     AuthModule,
+    NavigationModule,
   ],
   controllers: [AppController],
 })

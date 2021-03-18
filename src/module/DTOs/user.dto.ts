@@ -2,6 +2,20 @@ import { User } from '../entities/user/user.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
+export class indexUserDto {
+  @ApiProperty({
+    enum: [3, 4, 5],
+    description: '3: 기관회원, 4: 자문단 회원, 5: 관리자',
+  })
+  @IsString()
+  type: number;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  name: string;
+}
+
 export class loginUserDto extends PickType(User, ['email', 'password']) {}
 
 export class emailValidationDto {

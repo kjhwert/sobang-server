@@ -9,14 +9,16 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from '../auth/strategy/local-auth.guard';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import {
   createUserDto,
   emailValidationDto,
   findUserEmailDto,
+  indexUserDto,
   loginUserDto,
 } from '../module/DTOs/user.dto';
 import { Code } from '../module/entities/code.entity';
+import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
 
 @ApiTags('user')
 @Controller('user')
@@ -28,6 +30,11 @@ export class UserController {
   login(@Request() { user }, @Body() data: loginUserDto) {
     return user;
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Get()
+  index(@Query() data: indexUserDto) {}
 
   @Post('create')
   create(@Body() data: createUserDto) {

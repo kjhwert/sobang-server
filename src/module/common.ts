@@ -47,7 +47,17 @@ export const responseOk = (
 
 export const responseCreated = (
   data = {},
-  message = '등록되었습니다.',
+  message = '등록 되었습니다.',
+  statusCode = HttpStatus.OK,
+) => ({
+  statusCode,
+  message,
+  data,
+});
+
+export const responseUpdated = (
+  data = {},
+  message = '수정 되었습니다.',
   statusCode = HttpStatus.OK,
 ) => ({
   statusCode,
