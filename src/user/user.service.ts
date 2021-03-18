@@ -232,6 +232,16 @@ export class UserService {
       .getOne();
   }
 
+  async findById(userId: number): Promise<User | null> {
+    return await this.userRepository
+      .createQueryBuilder('u')
+      .innerJoinAndSelect('u.type', 't')
+      .where('u.id = :userId')
+      .andWhere('u.status = :act')
+      .setParameters({ userId, act: Code.ACT })
+      .getOne();
+  }
+
   async emailValidation(email: string) {
     const isEmailForm = await this.isEmailForm(email);
     if (!isEmailForm) {
@@ -247,7 +257,7 @@ export class UserService {
       data,
       message,
     } = await this.emailValidationLogService.create(email);
-    if (statusCode !== HttpStatus.CREATED) {
+    if (statusCode !== HttpStatus.OK) {
       return responseNotAcceptable(message);
     }
 
