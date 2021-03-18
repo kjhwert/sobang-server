@@ -34,7 +34,14 @@ export class DevelopmentOpinionService {
       .getCount();
   }
 
-  async show(opinionId: number) {}
+  async show(opinionId: number) {
+    const data = await this.devOpinionRepository
+      .createQueryBuilder()
+      .where('id = :opinionId', { opinionId })
+      .getOne();
+
+    return responseOk(data);
+  }
 
   async create(data: createDevOpinionDto) {
     try {

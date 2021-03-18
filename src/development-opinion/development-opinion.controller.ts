@@ -27,7 +27,9 @@ export class DevelopmentOpinionController {
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
   @Get(':opinionId')
-  show(@Param('opinionId') opinionId: number) {}
+  show(@Param('opinionId') opinionId: number) {
+    return this.devOpinionService.show(opinionId);
+  }
 
   @Post()
   create(@Body() data: createDevOpinionDto) {
