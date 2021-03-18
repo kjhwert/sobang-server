@@ -24,7 +24,8 @@ export class UserService {
   ) {}
 
   async create(data: createUserDto) {
-    const { email, code, name } = data;
+    const { email, code, type } = data;
+
     const isValidated = await this.emailValidationLogService.isValidated(
       email,
       code,
@@ -43,11 +44,13 @@ export class UserService {
       return responseNotAcceptable('이미 가입 중인 이메일입니다.');
     }
 
-    if (name) {
+    if (type === Code.ADVISORY) {
       return await this.createAdvisoryUser(data);
     }
 
-    return await this.createOrganizationUser(data);
+    if (type === Code.ORGANIZATION) {
+      return await this.createOrganizationUser(data);
+    }
   }
 
   async findUserPassword(email: string) {
