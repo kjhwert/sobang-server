@@ -1,6 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
+export class acceptRequestDto {
+  @ApiProperty({ type: [Number], description: '자문단으로 매칭된 회원번호' })
+  @IsNumber({}, { each: true })
+  advisories: number[];
+
+  @ApiProperty({ description: '테스트 유형번호' })
+  @IsNumber()
+  testCodeId: number;
+
+  @ApiProperty({ description: '테스트 시작 날짜' })
+  @IsString()
+  responseStartDate: string;
+
+  @ApiProperty({ description: '테스트 종료 날짜' })
+  @IsString()
+  responseEndDate: string;
+}
+
 export class indexRequestDto {
   @ApiProperty({
     enum: [6, 7, 8, 9, 10],

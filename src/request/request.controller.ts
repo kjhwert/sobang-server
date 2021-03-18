@@ -3,16 +3,22 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { createRequestDto, indexRequestDto } from '../module/DTOs/request.dto';
+import {
+  acceptRequestDto,
+  createRequestDto,
+  indexRequestDto,
+} from '../module/DTOs/request.dto';
 import { RequestService } from './request.service';
 import { JwtOrganizationGuard } from '../auth/jwt/jwt-organization.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Code } from '../module/entities/code.entity';
+import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
 
 @ApiTags('request')
 @Controller('request')
@@ -44,4 +50,14 @@ export class RequestController {
   create(@Body() data: createRequestDto, @Request() { user }) {
     return this.requestService.create(user.id, data);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Put('accept')
+  acceptRequest(@Request() { user }, @Body() data: acceptRequestDto) {}
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Put('refuse')
+  refuseRequest() {}
 }

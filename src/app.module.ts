@@ -16,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { NavigationModule } from './navigation/navigation.module';
 import { TestCodeModule } from './test-code/test-code.module';
+import { TrainingCenterModule } from './training-center/training-center.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { TestCodeModule } from './test-code/test-code.module';
     AuthModule,
     NavigationModule,
     TestCodeModule,
+    TrainingCenterModule,
   ],
   controllers: [AppController],
 })
