@@ -23,7 +23,7 @@ export class User extends CommonEntity {
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 100 })
+  @Column({ length: 100, select: false })
   password: string;
 
   @ApiProperty()
@@ -46,12 +46,22 @@ export class User extends CommonEntity {
   @Column({ length: 50, nullable: true })
   businessNo: string;
 
-  @ApiProperty()
-  @IsNumber()
+  @ApiProperty({ description: '소속' })
+  @IsString()
+  @Column({ length: 50, nullable: true, comment: '소속' })
+  department: string;
+
+  @ApiProperty({ description: '직위' })
+  @IsString()
+  @Column({ length: 50, nullable: true, comment: '직위' })
+  position: string;
+
   @ManyToOne(
     () => Code,
     code => code.id,
   )
+  @ApiProperty()
+  @IsNumber()
   type: number;
 
   private async hashing(password: string) {

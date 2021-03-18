@@ -6,11 +6,14 @@ import {
   Body,
   Get,
   Query,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from '../auth/strategy/local-auth.guard';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import {
+  createAdminUserDto,
   createUserDto,
   emailValidationDto,
   findUserEmailDto,
@@ -34,11 +37,27 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
   @Get()
-  index(@Query() data: indexUserDto) {}
+  index(@Query() data: indexUserDto) {
+    return this.userService.index(data);
+  }
 
   @Post('create')
   create(@Body() data: createUserDto) {
     return this.userService.create(data);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Post('create-admin')
+  createAdmin(@Request() { user }, @Body() data: createAdminUserDto) {
+    return this.userService.createAdmin(user.id, data);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Delete(':userId')
+  destroy(@Request() { user }, @Param('userId') userId: number) {
+    return this.userService.destroy(user.id, userId);
   }
 
   @Get('email-validation')

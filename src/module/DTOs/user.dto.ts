@@ -10,9 +10,8 @@ export class indexUserDto {
   @IsString()
   type: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @IsString()
-  @IsOptional()
   name: string;
 }
 
@@ -61,6 +60,28 @@ export class findUserEmailDto {
   @IsString()
   @IsOptional()
   businessNo?: string;
+}
+
+export class createAdminUserDto {
+  @ApiProperty()
+  @IsString()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  password: string;
+
+  @ApiProperty({ description: '관리자 명' })
+  @IsString()
+  name: string;
+
+  @ApiProperty({ description: '직위' })
+  @IsString()
+  position: string;
+
+  @ApiProperty({ description: '소속' })
+  @IsString()
+  department: string;
 }
 
 export class createUserDto {

@@ -65,6 +65,16 @@ export const responseUpdated = (
   data,
 });
 
+export const responseDestroyed = (
+  data = {},
+  message = '삭제 되었습니다.',
+  statusCode = HttpStatus.OK,
+) => ({
+  statusCode,
+  message,
+  data,
+});
+
 export const responseNotAuthorized = (
   message = '인증되지 않은 접근입니다.',
   statusCode = HttpStatus.UNAUTHORIZED,

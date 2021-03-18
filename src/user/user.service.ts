@@ -1,17 +1,23 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../module/entities/user/user.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Code } from '../module/entities/code.entity';
 import {
   responseCreated,
+  responseDestroyed,
   responseNotAcceptable,
   responseOk,
 } from '../module/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { EmailValidationLogService } from '../email/validation-log/email-validation-log.service';
 import emailValidationForm from '../module/emailForm/emailValidationForm';
-import { createUserDto, findUserEmailDto } from '../module/DTOs/user.dto';
+import {
+  createAdminUserDto,
+  createUserDto,
+  findUserEmailDto,
+  indexUserDto,
+} from '../module/DTOs/user.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as bcrypt from 'bcrypt';
 
@@ -22,6 +28,42 @@ export class UserService {
     private readonly mailerService: MailerService,
     private readonly emailValidationLogService: EmailValidationLogService,
   ) {}
+
+  async index({ type, name }: indexUserDto) {
+    const data = await this.userRepository
+      .createQueryBuilder()
+      .where('status = :act')
+      .andWhere('typeId = :type')
+      .andWhere(
+        new Brackets(qb =>
+          qb.orWhere('name like :name').orWhere('businessName like :name'),
+        ),
+      )
+      .setParameters({ type, name: `%${name}%`, act: Code.ACT })
+      .getMany();
+
+    return responseOk(data);
+  }
+
+  async createAdmin(adminId: number, data: createAdminUserDto) {
+    const hasEmail = await this.hasEmail(data.email);
+    if (hasEmail) {
+      return responseNotAcceptable('이미 가입 중인 이메일입니다.');
+    }
+
+    try {
+      const newUser = await this.userRepository.create({
+        ...data,
+        type: Code.ADMIN,
+        createdId: adminId,
+      });
+      await this.userRepository.save(newUser);
+
+      return responseCreated();
+    } catch (e) {
+      return responseNotAcceptable(e.message);
+    }
+  }
 
   async create(data: createUserDto) {
     const { email, code, type } = data;
@@ -50,6 +92,20 @@ export class UserService {
 
     if (type === Code.ORGANIZATION) {
       return await this.createOrganizationUser(data);
+    }
+  }
+
+  async destroy(adminId: number, userId: number) {
+    try {
+      await this.userRepository
+        .createQueryBuilder()
+        .update({ status: Code.DELETE, updatedId: adminId })
+        .where('id = :userId', { userId })
+        .execute();
+
+      return responseDestroyed();
+    } catch (e) {
+      return responseNotAcceptable(e.message);
     }
   }
 
