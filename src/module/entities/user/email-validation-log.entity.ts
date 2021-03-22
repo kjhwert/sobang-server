@@ -20,6 +20,6 @@ export class EmailValidationLog {
 
   @BeforeInsert()
   private async randomCode() {
-    this.code = randomStringGenerator();
+    this.code = randomStringGenerator().substr(0, 8);
   }
 }
