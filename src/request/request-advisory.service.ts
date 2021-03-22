@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RequestAdvisory } from '../module/entities/request/request-advisory.entity';
@@ -107,7 +108,10 @@ export class RequestAdvisoryService {
     }
   }
 
-  async isUserAssigned(requestId: number, userId: number): Promise<boolean> {
+  async isUserAssigned(
+    requestId: number,
+    userId: number,
+  ): Promise<Error | void> {
     const result = await this.requestAdvisoryRepository
       .createQueryBuilder()
       .where('requestId = :requestId')
@@ -115,10 +119,8 @@ export class RequestAdvisoryService {
       .setParameters({ requestId, userId })
       .getOne();
 
-    if (result && result.id) {
-      return true;
+    if (!result || !result.id) {
+      throw new NotAcceptableException('', '해당 요청에 대한 권한이 없습니다.');
     }
-
-    return false;
   }
 }

@@ -1,10 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RequestOpinion } from '../module/entities/request/request-opinion.entity';
 import { Repository } from 'typeorm';
 import { createRequestOpinionDto } from '../module/DTOs/request.dto';
 import { responseCreated, responseNotAcceptable } from '../module/common';
 import { RequestAdvisoryService } from './request-advisory.service';
+import { RequestService } from './request.service';
+import { Code } from '../module/entities/code.entity';
 
 @Injectable()
 export class RequestOpinionService {
@@ -12,6 +20,8 @@ export class RequestOpinionService {
     @InjectRepository(RequestOpinion)
     private requestOpinionRepository: Repository<RequestOpinion>,
     private readonly requestAdvisoryService: RequestAdvisoryService,
+    @Inject(forwardRef(() => RequestService))
+    private readonly requestService: RequestService,
   ) {}
 
   async create(
@@ -19,14 +29,12 @@ export class RequestOpinionService {
     requestId: number,
     data: createRequestOpinionDto,
   ) {
-    const isUserAssigned = await this.requestAdvisoryService.isUserAssigned(
-      requestId,
-      userId,
-    );
-
-    if (!isUserAssigned) {
-      return responseNotAcceptable('해당 요청에 대한 권한이 없습니다.');
-    }
+    await this.requestService.isCorrectProcess(requestId, [
+      Code.PROCESS_APPROVE,
+      Code.PROCESS_COMPLETE,
+    ]);
+    await this.requestAdvisoryService.isUserAssigned(requestId, userId);
+    await this.isUserAlreadyRegistered(requestId, userId);
 
     try {
       const newOpinion = await this.requestOpinionRepository.create({
@@ -36,10 +44,24 @@ export class RequestOpinionService {
         ...data,
       });
       await this.requestOpinionRepository.save(newOpinion);
+      await this.requestService.changeProcessCompleteWhenItApproved(requestId);
 
       return responseCreated();
     } catch (e) {
       return responseNotAcceptable(e.message);
+    }
+  }
+
+  async isUserAlreadyRegistered(requestId: number, userId: number) {
+    const count = await this.requestOpinionRepository
+      .createQueryBuilder()
+      .where('requestId = :requestId')
+      .andWhere('userId = :userId')
+      .setParameters({ requestId, userId })
+      .getCount();
+
+    if (count > 0) {
+      throw new NotAcceptableException('', '이미 등록되었습니다.');
     }
   }
 

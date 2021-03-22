@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from '../module/entities/request/request.entity';
@@ -200,6 +201,8 @@ export class RequestService {
     try {
       const newRequest = await this.requestRepository.create({
         ...data,
+        file: data.fileId ? data.fileId : null,
+        equipment: data.equipmentId ? data.equipmentId : null,
         user: userId,
         createdId: userId,
       });
@@ -216,13 +219,7 @@ export class RequestService {
     requestId: number,
     data: acceptRequestDto,
   ) {
-    const isCorrectProcess = await this.isCorrectProcess(
-      requestId,
-      Code.PROCESS_WAIT,
-    );
-    if (!isCorrectProcess) {
-      return responseNotAcceptable('이미 처리되었습니다.');
-    }
+    await this.isCorrectProcess(requestId, [Code.PROCESS_WAIT]);
 
     const { advisories, testCodeId, trainingCenterId, ...rest } = data;
 
@@ -252,13 +249,7 @@ export class RequestService {
     requestId: number,
     data: refuseRequestDto,
   ) {
-    const isCorrectProcess = await this.isCorrectProcess(
-      requestId,
-      Code.PROCESS_WAIT,
-    );
-    if (!isCorrectProcess) {
-      return responseNotAcceptable('이미 처리되었습니다.');
-    }
+    await this.isCorrectProcess(requestId, [Code.PROCESS_WAIT]);
 
     try {
       await this.requestRepository
@@ -277,7 +268,7 @@ export class RequestService {
     }
   }
 
-  async isCorrectProcess(requestId: number, processId) {
+  async changeProcessCompleteWhenItApproved(requestId: number) {
     const data = await this.requestRepository
       .createQueryBuilder()
       .select(['processId'])
@@ -286,10 +277,39 @@ export class RequestService {
       .setParameters({ requestId, act: Code.ACT })
       .getRawOne();
 
-    if (!data || data.processId !== processId) {
-      return false;
+    if (!data || !data.processId) {
+      throw new NotAcceptableException('', '올바르지 않은 접근입니다.');
     }
 
-    return true;
+    if (data.processId === Code.PROCESS_COMPLETE) {
+      return;
+    }
+
+    try {
+      await this.requestRepository
+        .createQueryBuilder()
+        .update({ process: Code.PROCESS_COMPLETE })
+        .where('id = :requestId', { requestId })
+        .execute();
+    } catch (e) {
+      throw new NotAcceptableException('', e.message);
+    }
+  }
+
+  async isCorrectProcess(
+    requestId: number,
+    process: number[],
+  ): Promise<Error | void> {
+    const data = await this.requestRepository
+      .createQueryBuilder()
+      .select(['processId'])
+      .where('status = :act')
+      .andWhere('id = :requestId')
+      .setParameters({ requestId, act: Code.ACT })
+      .getRawOne();
+
+    if (!data || !data.processId || !process.includes(data.processId)) {
+      throw new NotAcceptableException('', '올바르지 않은 접근입니다.');
+    }
   }
 }

@@ -16,5 +16,6 @@ import { RequestAdvisoryModule } from './request-advisory.module';
   ],
   controllers: [RequestController],
   providers: [RequestService],
+  exports: [RequestService],
 })
 export class RequestModule {}

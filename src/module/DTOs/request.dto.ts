@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { Request } from '../entities/request/request.entity';
 import { RequestOpinion } from '../entities/request/request-opinion.entity';
 
@@ -83,8 +83,9 @@ export class createRequestDto {
   @IsString()
   requestEtc: string;
 
-  @ApiProperty({ description: '첨부파일' })
+  @ApiProperty({ description: '첨부파일', nullable: true })
   @IsNumber()
+  @IsOptional()
   fileId: number;
 
   @ApiProperty({ description: '담당자 명' })
