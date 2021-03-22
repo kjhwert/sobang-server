@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { JwtAdminStrategy } from './jwt/jwt-admin.strategy';
 import { JwtOrganizationStrategy } from './jwt/jwt-organization.strategy';
+import { JwtAdvisoryStrategy } from './jwt/jwt-advisory.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { JwtOrganizationStrategy } from './jwt/jwt-organization.strategy';
     LocalStrategy,
     JwtStrategy,
     JwtAdminStrategy,
+    JwtAdvisoryStrategy,
     JwtOrganizationStrategy,
   ],
 })

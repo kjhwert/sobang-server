@@ -3,16 +3,18 @@ import { RequestController } from './request.controller';
 import { RequestService } from './request.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Request } from '../module/entities/request/request.entity';
-import { RequestOpinion } from '../module/entities/request/request-opinion.entity';
-import { RequestOpinionService } from './request-opinion.service';
-import { RequestAdvisoryService } from './request-advisory.service';
-import { RequestAdvisory } from '../module/entities/request/request-advisory.entity';
+import { UserModule } from '../user/user.module';
+import { RequestOpinionModule } from './request-opinion.module';
+import { RequestAdvisoryModule } from './request-advisory.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Request, RequestOpinion, RequestAdvisory]),
+    TypeOrmModule.forFeature([Request]),
+    RequestOpinionModule,
+    RequestAdvisoryModule,
+    UserModule,
   ],
   controllers: [RequestController],
-  providers: [RequestService, RequestOpinionService, RequestAdvisoryService],
+  providers: [RequestService],
 })
 export class RequestModule {}

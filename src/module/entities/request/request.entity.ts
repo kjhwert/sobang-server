@@ -7,6 +7,7 @@ import { FileEntity } from '../file.entity';
 import { Code } from '../code.entity';
 import { TestCode } from '../test-code.entity';
 import { User } from '../user/user.entity';
+import { TrainingCenter } from '../training-center.entity';
 
 @Entity()
 export class Request extends CommonEntity {
@@ -111,7 +112,7 @@ export class Request extends CommonEntity {
   @ApiProperty()
   @IsString()
   @Column({ type: 'text', nullable: true, comment: '반려 사유' })
-  rejectDescription: string;
+  refuseDescription: string;
 
   @ApiProperty()
   @IsNumber()
@@ -145,7 +146,10 @@ export class Request extends CommonEntity {
   responseEndDate: Date;
 
   @ApiProperty()
-  @IsString()
-  @Column({ length: 50, comment: '평가 장소', nullable: true })
-  responsePlace: string;
+  @IsNumber()
+  @ManyToOne(
+    () => TrainingCenter,
+    center => center.id,
+  )
+  trainingCenter: number;
 }

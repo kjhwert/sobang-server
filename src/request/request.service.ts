@@ -1,13 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from '../module/entities/request/request.entity';
 import { Repository } from 'typeorm';
-import { createRequestDto, indexRequestDto } from '../module/DTOs/request.dto';
+import {
+  acceptRequestDto,
+  createRequestDto,
+  indexRequestDto,
+  refuseRequestDto,
+} from '../module/DTOs/request.dto';
 import {
   pagination,
   responseCreated,
   responseNotAcceptable,
   responseOk,
+  responseUpdated,
 } from '../module/common';
 import { Code } from '../module/entities/code.entity';
 import { RequestOpinionService } from './request-opinion.service';
@@ -140,6 +151,51 @@ export class RequestService {
     return this.requestAdvisoryService.index(userId, query);
   }
 
+  async show(requestId: number) {
+    const data = await this.requestRepository
+      .createQueryBuilder('r')
+      .select([
+        'r.id id',
+        'r.equipmentType equipmentType',
+        'r.equipmentName equipmentName',
+        'r.requestType requestType',
+        'r.requestPlace requestPlace',
+        'r.requestStartDate requestStartDate',
+        'r.requestEndDate requestEndDate',
+        'r.requestTestTimes requestTestTimes',
+        'r.requestEtc requestEtc',
+        'r.managerName managerName',
+        'r.managerPosition managerPosition',
+        'r.managerContact managerContact',
+        'r.managerPhone managerPhone',
+        'r.managerEmail managerEmail',
+        'r.refuseDescription refuseDescription',
+        'r.responseStartDate responseStartDate',
+        'r.responseEndDate responseEndDate',
+        'f.name fileName',
+        'f.path filePath',
+        't.id testCodeId',
+        't.description testCode',
+        'r.testCodeDescription testCodeDescription',
+        'p.id processId',
+        'p.description process',
+        'c.name trainingCenterName',
+      ])
+      .leftJoin('r.file', 'f')
+      .leftJoin('r.testCode', 't')
+      .innerJoin('r.process', 'p')
+      .leftJoin('r.trainingCenter', 'c')
+      .where('r.id = :requestId')
+      .andWhere('r.status = :act')
+      .setParameters({ requestId, act: Code.ACT })
+      .getRawOne();
+
+    const opinions = await this.requestOpinionService.getOpinionsByRequestId(
+      requestId,
+    );
+    return responseOk({ ...data, opinions });
+  }
+
   async create(userId: number, data: createRequestDto) {
     try {
       const newRequest = await this.requestRepository.create({
@@ -153,5 +209,87 @@ export class RequestService {
     } catch (e) {
       return responseNotAcceptable(e.message);
     }
+  }
+
+  async acceptRequest(
+    adminId: number,
+    requestId: number,
+    data: acceptRequestDto,
+  ) {
+    const isCorrectProcess = await this.isCorrectProcess(
+      requestId,
+      Code.PROCESS_WAIT,
+    );
+    if (!isCorrectProcess) {
+      return responseNotAcceptable('이미 처리되었습니다.');
+    }
+
+    const { advisories, testCodeId, trainingCenterId, ...rest } = data;
+
+    try {
+      await this.requestAdvisoryService.create(advisories, requestId);
+
+      await this.requestRepository
+        .createQueryBuilder()
+        .update({
+          ...rest,
+          testCode: testCodeId,
+          trainingCenter: trainingCenterId,
+          updatedId: adminId,
+          process: Code.PROCESS_APPROVE,
+        })
+        .where('id = :requestId', { requestId })
+        .execute();
+
+      return responseUpdated();
+    } catch (e) {
+      return responseNotAcceptable(e.message);
+    }
+  }
+
+  async refuseRequest(
+    adminId: number,
+    requestId: number,
+    data: refuseRequestDto,
+  ) {
+    const isCorrectProcess = await this.isCorrectProcess(
+      requestId,
+      Code.PROCESS_WAIT,
+    );
+    if (!isCorrectProcess) {
+      return responseNotAcceptable('이미 처리되었습니다.');
+    }
+
+    try {
+      await this.requestRepository
+        .createQueryBuilder()
+        .update({
+          process: Code.PROCESS_REJECT,
+          updatedId: adminId,
+          ...data,
+        })
+        .where('id = :requestId', { requestId })
+        .execute();
+
+      return responseUpdated();
+    } catch (e) {
+      return responseNotAcceptable(e.message);
+    }
+  }
+
+  async isCorrectProcess(requestId: number, processId) {
+    const data = await this.requestRepository
+      .createQueryBuilder()
+      .select(['processId'])
+      .where('status = :act')
+      .andWhere('id = :requestId')
+      .setParameters({ requestId, act: Code.ACT })
+      .getRawOne();
+
+    if (!data || data.processId !== processId) {
+      return false;
+    }
+
+    return true;
   }
 }

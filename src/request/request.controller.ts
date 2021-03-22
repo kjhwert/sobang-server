@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -13,12 +14,14 @@ import {
   acceptRequestDto,
   createRequestDto,
   indexRequestDto,
+  refuseRequestDto,
 } from '../module/DTOs/request.dto';
 import { RequestService } from './request.service';
 import { JwtOrganizationGuard } from '../auth/jwt/jwt-organization.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Code } from '../module/entities/code.entity';
 import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
+import { RequestAdvisoryService } from './request-advisory.service';
 
 @ApiTags('request')
 @Controller('request')
@@ -45,6 +48,13 @@ export class RequestController {
   }
 
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':requestId')
+  show(@Param('requestId') requestId: number) {
+    return this.requestService.show(requestId);
+  }
+
+  @ApiBearerAuth()
   @UseGuards(JwtOrganizationGuard)
   @Post()
   create(@Body() data: createRequestDto, @Request() { user }) {
@@ -53,11 +63,23 @@ export class RequestController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
-  @Put('accept')
-  acceptRequest(@Request() { user }, @Body() data: acceptRequestDto) {}
+  @Put(':requestId/accept')
+  acceptRequest(
+    @Request() { user },
+    @Param('requestId') requestId: number,
+    @Body() data: acceptRequestDto,
+  ) {
+    return this.requestService.acceptRequest(user.id, requestId, data);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
-  @Put('refuse')
-  refuseRequest() {}
+  @Put(':requestId/refuse')
+  refuseRequest(
+    @Request() { user },
+    @Param('requestId') requestId: number,
+    @Body() data: refuseRequestDto,
+  ) {
+    return this.requestService.refuseRequest(user.id, requestId, data);
+  }
 }

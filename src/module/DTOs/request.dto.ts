@@ -1,5 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
+import { Request } from '../entities/request/request.entity';
+import { RequestOpinion } from '../entities/request/request-opinion.entity';
+
+export class createRequestOpinionDto extends PickType(RequestOpinion, [
+  'description',
+]) {}
+
+export class refuseRequestDto extends PickType(Request, [
+  'refuseDescription',
+]) {}
 
 export class acceptRequestDto {
   @ApiProperty({ type: [Number], description: '자문단으로 매칭된 회원번호' })
@@ -17,6 +27,10 @@ export class acceptRequestDto {
   @ApiProperty({ description: '테스트 종료 날짜' })
   @IsString()
   responseEndDate: string;
+
+  @ApiProperty({ description: '테스트 장소' })
+  @IsNumber()
+  trainingCenterId: number;
 }
 
 export class indexRequestDto {
