@@ -22,7 +22,7 @@ export class FileService {
       });
       await this.fileRepository.save(newFile);
 
-      return responseOk(newFile);
+      return responseOk(newFile, {}, '업로드 되었습니다.');
     } catch (e) {
       fs.unlinkSync(data.path);
       return responseNotAcceptable(e.message);
