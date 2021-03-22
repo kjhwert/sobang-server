@@ -35,6 +35,7 @@ export class AuthService {
 
     return responseOk({
       ...rest,
+      type,
       accessToken: this.jwtService.sign({
         id: rest.id,
         email: rest.email,
