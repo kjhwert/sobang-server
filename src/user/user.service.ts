@@ -20,6 +20,7 @@ import {
 } from '../module/DTOs/user.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as bcrypt from 'bcrypt';
+import findUserPasswordForm from '../module/emailForm/findUserPasswordForm';
 
 @Injectable()
 export class UserService {
@@ -141,7 +142,7 @@ export class UserService {
     }
 
     try {
-      const tempPassword = randomStringGenerator();
+      const tempPassword = randomStringGenerator().substr(0, 8);
       const password = await bcrypt.hash(tempPassword, 10);
 
       await this.userRepository
@@ -154,7 +155,7 @@ export class UserService {
         to: email,
         from: 'contact@hlabtech.com',
         subject: '[국립소방연구원] 임시 비밀번호 제공 안내입니다.',
-        html: emailValidationForm(email, tempPassword),
+        html: findUserPasswordForm(email, tempPassword),
       });
 
       return responseOk({}, {}, '이메일로 임시 비밀번호를 보내드렸습니다.');
