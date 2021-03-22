@@ -25,6 +25,6 @@ export class FileEntity extends CommonEntity {
 
   @ApiProperty()
   @IsString()
-  @Column({ length: 20 })
+  @Column({ length: 100 })
   type: string;
 }
