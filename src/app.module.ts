@@ -17,8 +17,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { NavigationModule } from './navigation/navigation.module';
 import { TestCodeModule } from './test-code/test-code.module';
 import { TrainingCenterModule } from './training-center/training-center.module';
-import { RequestAdvisoryModule } from './request/request-advisory.module';
-import { RequestOpinionModule } from './request/request-opinion.module';
 
 @Module({
   imports: [

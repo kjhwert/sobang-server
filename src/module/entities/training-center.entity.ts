@@ -3,6 +3,7 @@ import { CommonEntity } from './common.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 import { TrainingCenterGroup } from './training-center-group.entity';
+import { FileEntity } from './file.entity';
 
 @Entity()
 export class TrainingCenter extends CommonEntity {
@@ -26,4 +27,12 @@ export class TrainingCenter extends CommonEntity {
     group => group.id,
   )
   group: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @ManyToOne(
+    () => FileEntity,
+    file => file.id,
+  )
+  file: number;
 }
