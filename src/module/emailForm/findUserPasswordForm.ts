@@ -112,16 +112,11 @@ export default (email: string, code: string) => {
                       "
                     >
                       <table cellpadding="0" cellspacing="0" width="100%">
-                        <tr>
-                          <td
+                        <tr><td
                             width="30%"
                             style="font-size: 14px; padding-left: 10px"
-                          >
-                            임시 비밀번호
-                          </td>
-                          <td style="font-size: 14px; font-weight: bold">
-                            ${code}
-                          </td>
+                          >임시 비밀번호</td>
+                          <td style="font-size: 14px; font-weight: bold">${code}</td>
                         </tr>
                       </table>
                     </td>

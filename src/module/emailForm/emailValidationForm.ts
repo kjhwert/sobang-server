@@ -119,9 +119,7 @@ export default (email: string, authorization: string) => {
                           >
                             인증코드
                           </td>
-                          <td style="font-size: 14px; font-weight: bold">
-                            ${authorization}
-                          </td>
+                          <td style="font-size: 14px; font-weight: bold">${authorization}</td>
                         </tr>
                       </table>
                     </td>
