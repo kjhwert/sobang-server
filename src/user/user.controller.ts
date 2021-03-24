@@ -8,11 +8,13 @@ import {
   Query,
   Delete,
   Param,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from '../auth/strategy/local-auth.guard';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import {
+  changePasswordUserDto,
   createAdminUserDto,
   createUserDto,
   emailValidationDto,
@@ -23,6 +25,7 @@ import {
 } from '../module/DTOs/user.dto';
 import { Code } from '../module/entities/code.entity';
 import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
 @ApiTags('user')
 @Controller('user')
@@ -81,5 +84,12 @@ export class UserController {
   @Get('find-password')
   findUserPassword(@Query('email') email: string) {
     return this.userService.findUserPassword(email);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('change-password')
+  changePassword(@Request() { user }, @Body() data: changePasswordUserDto) {
+    return this.userService.changePassword(user.id, data);
   }
 }

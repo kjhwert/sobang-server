@@ -8,11 +8,13 @@ import {
   responseDestroyed,
   responseNotAcceptable,
   responseOk,
+  responseUpdated,
 } from '../module/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { EmailValidationLogService } from '../email/validation-log/email-validation-log.service';
 import emailValidationForm from '../module/emailForm/emailValidationForm';
 import {
+  changePasswordUserDto,
   createAdminUserDto,
   createUserDto,
   findUserEmailDto,
@@ -218,6 +220,32 @@ export class UserService {
       await this.userRepository.save(newUser);
 
       return responseCreated();
+    } catch (e) {
+      return responseNotAcceptable(e.message);
+    }
+  }
+
+  async changePassword(
+    userId: number,
+    { oldPassword, newPassword }: changePasswordUserDto,
+  ) {
+    const user = await this.findById(userId);
+
+    const isCorrect = await user.comparePassword(oldPassword);
+    if (!isCorrect) {
+      return responseNotAcceptable('비밀번호가 일치하지 않습니다.');
+    }
+
+    const password = await user.changePassword(newPassword);
+
+    try {
+      await this.userRepository
+        .createQueryBuilder()
+        .update({ password })
+        .where('id = :userId', { userId })
+        .execute();
+
+      return responseUpdated();
     } catch (e) {
       return responseNotAcceptable(e.message);
     }
