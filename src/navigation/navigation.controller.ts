@@ -9,8 +9,6 @@ import { updateNavigationDto } from '../module/DTOs/navigation.dto';
 export class NavigationController {
   constructor(private readonly navigationService: NavigationService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAdminGuard)
   @Get()
   index() {
     return this.navigationService.index();
