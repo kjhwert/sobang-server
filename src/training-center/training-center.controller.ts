@@ -12,8 +12,8 @@ export class TrainingCenterController {
     return this.trainingCenterService.index(name);
   }
 
-  @Get(':centerId')
-  show(@Param('centerId') centerId: number) {
-    return this.trainingCenterService.show(centerId);
+  @Get(':areaId')
+  show(@Param('areaId') areaId: number) {
+    return this.trainingCenterService.show(areaId);
   }
 }

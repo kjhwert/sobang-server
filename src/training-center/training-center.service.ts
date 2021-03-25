@@ -39,7 +39,7 @@ export class TrainingCenterService {
     return responseOk(data);
   }
 
-  async show(centerId: number) {
+  async show(areaId: number) {
     const group = await this.groupRepository
       .createQueryBuilder()
       .select(['id', 'name', 'address', 'scale', 'facilities'])
