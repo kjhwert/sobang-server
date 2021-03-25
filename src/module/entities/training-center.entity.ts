@@ -21,6 +21,11 @@ export class TrainingCenter extends CommonEntity {
   description: string;
 
   @ApiProperty()
+  @IsString()
+  @Column({ type: 'text' })
+  descriptionTag: string;
+
+  @ApiProperty()
   @IsNumber()
   @ManyToOne(
     () => TrainingCenterGroup,

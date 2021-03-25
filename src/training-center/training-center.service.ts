@@ -21,6 +21,7 @@ export class TrainingCenterService {
         't.id id',
         't.name name',
         't.description description',
+        't.descriptionTag descriptionTag',
         'g.name groupName',
       ])
       .innerJoin('t.group', 'g')
@@ -43,7 +44,7 @@ export class TrainingCenterService {
     const group = await this.groupRepository
       .createQueryBuilder()
       .select(['id', 'name', 'address', 'scale', 'facilities'])
-      .where('id = :centerId', { centerId })
+      .where('id = :centerId', { areaId })
       .getRawOne();
 
     const center = await this.centerRepository
@@ -52,11 +53,12 @@ export class TrainingCenterService {
         'c.id id',
         'c.name name',
         'c.description description',
+        'c.descriptionTag descriptionTag',
         'f.name imageName',
         'f.path imagePath',
       ])
       .leftJoin('c.file', 'f')
-      .where('c.groupId = :centerId', { centerId })
+      .where('c.groupId = :centerId', { areaId })
       .getRawMany();
 
     return responseOk({ ...group, center });
