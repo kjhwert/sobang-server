@@ -4,6 +4,7 @@ import { User } from '../module/entities/user/user.entity';
 import { Brackets, Repository } from 'typeorm';
 import { Code } from '../module/entities/code.entity';
 import {
+  pagination,
   responseCreated,
   responseDestroyed,
   responseNotAcceptable,
@@ -32,7 +33,10 @@ export class UserService {
     private readonly emailValidationLogService: EmailValidationLogService,
   ) {}
 
-  async index({ type, name }: indexUserDto) {
+  async index({ type, name, page }: indexUserDto) {
+    const total = await this.getIndexCount(type, name);
+    const paging = await pagination(page, total);
+
     const data = await this.userRepository
       .createQueryBuilder()
       .select([
@@ -57,7 +61,21 @@ export class UserService {
       .setParameters({ type, name: `%${name}%`, act: Code.ACT })
       .getRawMany();
 
-    return responseOk(data);
+    return responseOk(data, paging);
+  }
+
+  async getIndexCount(type: number, name: string) {
+    return this.userRepository
+      .createQueryBuilder()
+      .where('status = :act')
+      .andWhere('typeId = :type')
+      .andWhere(
+        new Brackets(qb =>
+          qb.orWhere('name like :name').orWhere('businessName like :name'),
+        ),
+      )
+      .setParameters({ type, name: `%${name}%`, act: Code.ACT })
+      .getCount();
   }
 
   async searchAdvisory(name: string) {

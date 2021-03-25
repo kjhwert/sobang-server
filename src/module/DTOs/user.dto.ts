@@ -28,6 +28,10 @@ export class indexUserDto {
   @ApiProperty()
   @IsString()
   name: string;
+
+  @ApiProperty()
+  @IsString()
+  page: number;
 }
 
 export class loginUserDto extends PickType(User, ['email', 'password']) {}
