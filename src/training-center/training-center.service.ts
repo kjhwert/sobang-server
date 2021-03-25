@@ -22,6 +22,7 @@ export class TrainingCenterService {
         't.name name',
         't.description description',
         't.descriptionTag descriptionTag',
+        'g.id groupId',
         'g.name groupName',
       ])
       .innerJoin('t.group', 'g')
