@@ -44,7 +44,7 @@ export class TrainingCenterService {
     const group = await this.groupRepository
       .createQueryBuilder()
       .select(['id', 'name', 'address', 'scale', 'facilities'])
-      .where('id = :centerId', { areaId })
+      .where('id = :areaId', { areaId })
       .getRawOne();
 
     const center = await this.centerRepository
@@ -58,7 +58,7 @@ export class TrainingCenterService {
         'f.path imagePath',
       ])
       .leftJoin('c.file', 'f')
-      .where('c.groupId = :centerId', { areaId })
+      .where('c.groupId = :areaId', { areaId })
       .getRawMany();
 
     return responseOk({ ...group, center });
