@@ -9,10 +9,12 @@ import {
   Delete,
   Param,
   Put,
+  Header,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from '../auth/strategy/local-auth.guard';
-import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   changePasswordUserDto,
   createAdminUserDto,
@@ -23,9 +25,12 @@ import {
   loginUserDto,
   searchAdvisoryUserDto,
 } from '../module/DTOs/user.dto';
-import { Code } from '../module/entities/code.entity';
 import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import * as XLSX from 'xlsx';
+import { Code } from '../module/entities/code.entity';
+import { User } from '../module/entities/user/user.entity';
+import { responseNotAcceptable } from '../module/common';
 
 @ApiTags('user')
 @Controller('user')
@@ -92,4 +97,75 @@ export class UserController {
   changePassword(@Request() { user }, @Body() data: changePasswordUserDto) {
     return this.userService.changePassword(user.id, data);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Get('excel-download')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+  @Header('Content-Disposition', 'attachment; filename=users.xlsx')
+  async excelDownload(@Res() res, @Query('type') type: number) {
+    let users = null;
+    switch (type) {
+      case Code.ORGANIZATION:
+        const organizationUsers = await this.userService.getAllOrganizationUser();
+        users = organizationUsers.map(
+          ({
+            email,
+            businessOwner,
+            businessName,
+            businessNo,
+            createdAt,
+          }: User) => {
+            return {
+              이메일: email,
+              상호명: businessName,
+              대표자명: businessOwner,
+              사업자번호: businessNo,
+              등록일자: createdAt,
+            };
+          },
+        );
+        break;
+      case Code.ADVISORY:
+        const advisoryUsers = await this.userService.getAllAdvisoryUser();
+        users = advisoryUsers.map(
+          ({ email, position, department, createdAt }: User) => {
+            return {
+              이메일: email,
+              소속: department,
+              직위: position,
+              등록일자: createdAt,
+            };
+          },
+        );
+        break;
+    }
+
+    if (users === null) {
+      return responseNotAcceptable('조회할 회원 정보가 없습니다.');
+    }
+
+    // step 1. workbook 생성
+    const wb = XLSX.utils.book_new();
+
+    // step 2. 시트 만들기
+    const newWorksheet = XLSX.utils.json_to_sheet(users);
+
+    // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.
+    XLSX.utils.book_append_sheet(wb, newWorksheet, '연락처');
+
+    // step 4. 파일을 생성한다. (메모리에만 저장)
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+
+    // step 5. 파일을 response 한다.
+    res.end(Buffer.from(wbout, 'base64'));
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Get('excel-upload-advisory')
+  async excelUploadAdvisory() {}
 }

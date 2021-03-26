@@ -64,7 +64,7 @@ export class UserService {
     return responseOk(data, paging);
   }
 
-  async getIndexCount(type: number, name: string) {
+  getIndexCount(type: number, name: string) {
     return this.userRepository
       .createQueryBuilder()
       .where('status = :act')
@@ -76,6 +76,33 @@ export class UserService {
       )
       .setParameters({ type, name: `%${name}%`, act: Code.ACT })
       .getCount();
+  }
+
+  async getAllOrganizationUser() {
+    return await this.userRepository
+      .createQueryBuilder()
+      .select([
+        'id',
+        'email',
+        'businessName',
+        'businessOwner',
+        'businessNo',
+        'createdAt',
+      ])
+      .where('typeId = :type')
+      .andWhere('status = :act')
+      .setParameters({ type: Code.ORGANIZATION, act: Code.ACT })
+      .getRawMany();
+  }
+
+  async getAllAdvisoryUser() {
+    return await this.userRepository
+      .createQueryBuilder()
+      .select(['id', 'email', 'name', 'position', 'department', 'createdAt'])
+      .where('typeId = :type')
+      .andWhere('status = :act')
+      .setParameters({ type: Code.ADVISORY, act: Code.ACT })
+      .getRawMany();
   }
 
   async searchAdvisory(name: string) {

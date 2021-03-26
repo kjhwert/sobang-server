@@ -22,7 +22,11 @@ export class DevelopmentOpinionService {
     const total = await this.getIndexCount();
     const paging = await pagination(page, total);
 
-    const data = await this.devOpinionRepository.createQueryBuilder().getMany();
+    const data = await this.devOpinionRepository
+      .createQueryBuilder()
+      .where('status = :act', { act: Code.ACT })
+      .orderBy('id', 'DESC')
+      .getMany();
 
     return responseOk(data, paging);
   }
