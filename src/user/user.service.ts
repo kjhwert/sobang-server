@@ -78,6 +78,25 @@ export class UserService {
       .getCount();
   }
 
+  async show(userId: number) {
+    const { password, ...data } = await this.findById(userId);
+    // const data = await this.userRepository
+    //   .createQueryBuilder()
+    //   .select([
+    //     'email',
+    //     'name',
+    //     'businessName',
+    //     'businessOwner',
+    //     'businessNo',
+    //     'position',
+    //     'department',
+    //   ])
+    //   .where('id = :userId', { userId })
+    //   .getOne();
+
+    return responseOk(data);
+  }
+
   async getAllOrganizationUser() {
     return await this.userRepository
       .createQueryBuilder()

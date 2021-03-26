@@ -52,6 +52,13 @@ export class UserController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
+  @Get(':userId')
+  show(@Param('userId') userId: number) {
+    return this.userService.show(userId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
   @Get('search-advisory')
   searchAdvisory(@Query() { name }: searchAdvisoryUserDto) {
     return this.userService.searchAdvisory(name);
