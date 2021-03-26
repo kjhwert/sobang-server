@@ -52,13 +52,6 @@ export class UserController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
-  @Get(':userId')
-  show(@Param('userId') userId: number) {
-    return this.userService.show(userId);
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(JwtAdminGuard)
   @Get('search-advisory')
   searchAdvisory(@Query() { name }: searchAdvisoryUserDto) {
     return this.userService.searchAdvisory(name);
@@ -117,7 +110,9 @@ export class UserController {
     let users = null;
     switch (type) {
       case Code.ORGANIZATION:
-        const organizationUsers = await this.userService.getAllOrganizationUser();
+        const organizationUsers = await this.userService.getAllUsersByType(
+          type,
+        );
         users = organizationUsers.map(
           ({
             email,
@@ -137,7 +132,7 @@ export class UserController {
         );
         break;
       case Code.ADVISORY:
-        const advisoryUsers = await this.userService.getAllAdvisoryUser();
+        const advisoryUsers = await this.userService.getAllUsersByType(type);
         users = advisoryUsers.map(
           ({ email, position, department, createdAt }: User) => {
             return {
@@ -175,4 +170,11 @@ export class UserController {
   @UseGuards(JwtAdminGuard)
   @Get('excel-upload-advisory')
   async excelUploadAdvisory() {}
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Get(':userId')
+  show(@Param('userId') userId: number) {
+    return this.userService.show(userId);
+  }
 }

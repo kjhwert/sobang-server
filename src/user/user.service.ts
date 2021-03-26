@@ -24,6 +24,7 @@ import {
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as bcrypt from 'bcrypt';
 import findUserPasswordForm from '../module/emailForm/findUserPasswordForm';
+import * as XLSX from 'xlsx';
 
 @Injectable()
 export class UserService {
@@ -97,31 +98,13 @@ export class UserService {
     return responseOk(data);
   }
 
-  async getAllOrganizationUser() {
+  async getAllUsersByType(type: number) {
     return await this.userRepository
       .createQueryBuilder()
-      .select([
-        'id',
-        'email',
-        'businessName',
-        'businessOwner',
-        'businessNo',
-        'createdAt',
-      ])
       .where('typeId = :type')
       .andWhere('status = :act')
-      .setParameters({ type: Code.ORGANIZATION, act: Code.ACT })
-      .getRawMany();
-  }
-
-  async getAllAdvisoryUser() {
-    return await this.userRepository
-      .createQueryBuilder()
-      .select(['id', 'email', 'name', 'position', 'department', 'createdAt'])
-      .where('typeId = :type')
-      .andWhere('status = :act')
-      .setParameters({ type: Code.ADVISORY, act: Code.ACT })
-      .getRawMany();
+      .setParameters({ type, act: Code.ACT })
+      .getMany();
   }
 
   async searchAdvisory(name: string) {
@@ -211,18 +194,18 @@ export class UserService {
       const tempPassword = randomStringGenerator().substr(0, 8);
       const password = await bcrypt.hash(tempPassword, 10);
 
-      await this.userRepository
-        .createQueryBuilder()
-        .update({ password })
-        .where('id = :id', { id: user.id })
-        .execute();
-
       await this.mailerService.sendMail({
         to: email,
         from: 'contact@hlabtech.com',
         subject: '[국립소방연구원] 임시 비밀번호 제공 안내입니다.',
         html: findUserPasswordForm(email, tempPassword),
       });
+
+      await this.userRepository
+        .createQueryBuilder()
+        .update({ password })
+        .where('id = :id', { id: user.id })
+        .execute();
 
       return responseOk({}, {}, '이메일로 임시 비밀번호를 보내드렸습니다.');
     } catch (e) {
