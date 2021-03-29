@@ -48,8 +48,12 @@ export class RequestService {
           'p.description processName',
           'r.requestStartDate requestStartDate',
           'r.createdAt createdAt',
+          'r.responseStartDate startDate',
           'ifnull(o.cnt,0) opinionCount',
+          'u.businessName businessName',
+          'u.businessOwner businessOwner',
         ])
+        .innerJoin('r.user', 'u')
         .innerJoin('r.process', 'p')
         .leftJoin(`(${opinionCountSubQuery})`, 'o', 'r.id = o.requestId')
         .where('r.status = :act')
@@ -68,8 +72,12 @@ export class RequestService {
         'p.description processName',
         'r.requestStartDate requestStartDate',
         'r.createdAt createdAt',
+        'r.responseStartDate startDate',
         'ifnull(o.cnt,0) opinionCount',
+        'u.businessName businessName',
+        'u.businessOwner businessOwner',
       ])
+      .innerJoin('r.user', 'u')
       .innerJoin('r.process', 'p')
       .leftJoin(`(${opinionCountSubQuery})`, 'o', 'r.id = o.requestId')
       .where('r.status = :act')

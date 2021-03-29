@@ -21,7 +21,6 @@ import { JwtOrganizationGuard } from '../auth/jwt/jwt-organization.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Code } from '../module/entities/code.entity';
 import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
-import { RequestAdvisoryService } from './request-advisory.service';
 
 @ApiTags('request')
 @Controller('request')
