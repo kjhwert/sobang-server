@@ -28,9 +28,9 @@ export class NoticeController {
     return this.noticeService.mainIndex();
   }
 
-  @Get(':id')
-  show(@Param('id') id: number) {
-    return this.noticeService.show(id);
+  @Get(':noticeId')
+  show(@Param('noticeId') noticeId: number) {
+    return this.noticeService.show(noticeId);
   }
 
   @Post()
@@ -40,10 +40,10 @@ export class NoticeController {
     return this.noticeService.create(user.id, data);
   }
 
-  @Delete()
+  @Delete(':noticeId')
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
-  destroy(@Param('id') id: number, @Request() { user }) {
-    return this.noticeService.destroy(user.id, id);
+  destroy(@Param('noticeId') noticeId: number, @Request() { user }) {
+    return this.noticeService.destroy(user.id, noticeId);
   }
 }

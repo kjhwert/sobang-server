@@ -34,10 +34,10 @@ export class FaqController {
     return this.faqService.create(user.id, data);
   }
 
-  @Delete()
+  @Delete(':faqId')
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
-  destroy(@Param('id') id: number, @Request() { user }) {
-    return this.faqService.destroy(user.id, id);
+  destroy(@Param('faqId') faqId: number, @Request() { user }) {
+    return this.faqService.destroy(user.id, faqId);
   }
 }
