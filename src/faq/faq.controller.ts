@@ -7,18 +7,23 @@ import {
   UseGuards,
   Delete,
   Param,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FaqService } from './faq.service';
 import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
-import { createFaqDto } from '../module/DTOs/faq.dto';
+import { createFaqDto, indexFaqDto } from '../module/DTOs/faq.dto';
 
 @ApiTags('faq')
 @Controller('faq')
 export class FaqController {
   constructor(private readonly faqService: FaqService) {}
   @Get()
-  index() {
+  index(@Query() { page }: indexFaqDto) {
+    if (page) {
+      return this.faqService.pagingIndex(page);
+    }
+
     return this.faqService.index();
   }
 

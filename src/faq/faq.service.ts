@@ -5,9 +5,12 @@ import { Repository } from 'typeorm';
 import { Code } from '../module/entities/code.entity';
 import {
   MAIN_INDEX_ROW,
+  pagination,
+  PER_PAGE,
   responseCreated,
   responseNotAcceptable,
   responseOk,
+  SKIP_PAGE,
 } from '../module/common';
 import { createFaqDto } from '../module/DTOs/faq.dto';
 
@@ -25,6 +28,31 @@ export class FaqService {
       .getRawMany();
 
     return responseOk(data);
+  }
+
+  async pagingIndex(page: number) {
+    const total = await this.getIndexCount();
+    const paging = await pagination(page, total);
+
+    const data = await this.faqRepository
+      .createQueryBuilder()
+      .select(['id', 'request', 'response'])
+      .where('status = :act')
+      .setParameters({ act: Code.ACT })
+      .orderBy('id', 'DESC')
+      .offset(SKIP_PAGE(page))
+      .limit(PER_PAGE)
+      .getRawMany();
+
+    return responseOk(data, paging);
+  }
+
+  async getIndexCount() {
+    return await this.faqRepository
+      .createQueryBuilder()
+      .where('status = :act')
+      .setParameters({ act: Code.ACT })
+      .getCount();
   }
 
   async mainIndex() {
