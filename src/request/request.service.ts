@@ -189,10 +189,14 @@ export class RequestService {
         'p.id processId',
         'p.description process',
         'c.name trainingCenterName',
+        'u.businessName businessName',
+        'u.businessOwner businessOwner',
+        'u.businessNo businessNo',
       ])
       .leftJoin('r.file', 'f')
       .leftJoin('r.testCode', 't')
       .innerJoin('r.process', 'p')
+      .innerJoin('r.user', 'u')
       .leftJoin('r.trainingCenter', 'c')
       .where('r.id = :requestId')
       .andWhere('r.status = :act')
