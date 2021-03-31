@@ -110,7 +110,7 @@ export class UserService {
   async searchAdvisory(name: string) {
     const data = await this.userRepository
       .createQueryBuilder()
-      .select(['id', 'name'])
+      .select(['id', 'name', 'email'])
       .where('status = :act')
       .andWhere('typeId = :type')
       .andWhere('name like :name')
