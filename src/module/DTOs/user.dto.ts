@@ -14,6 +14,7 @@ export class changePasswordUserDto {
 
 export class searchAdvisoryUserDto {
   @ApiProperty({ description: '자문단 매칭시 자문단 회원 명으로 검색' })
+  @IsString()
   name: string;
 }
 
