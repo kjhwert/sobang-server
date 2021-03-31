@@ -36,6 +36,7 @@ export class TestOperationService {
         'createdAt',
       ])
       .where('status = :act', { act: Code.ACT })
+      .orderBy('id', 'DESC')
       .offset(SKIP_PAGE(page))
       .limit(PER_PAGE)
       .getRawMany();
