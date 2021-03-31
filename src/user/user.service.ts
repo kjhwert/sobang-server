@@ -1,7 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../module/entities/user/user.entity';
-import { Brackets, Repository } from 'typeorm';
+import { Brackets, getConnection, getManager, Repository } from 'typeorm';
 import { Code } from '../module/entities/code.entity';
 import {
   pagination,
@@ -15,6 +20,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { EmailValidationLogService } from '../email/validation-log/email-validation-log.service';
 import emailValidationForm from '../module/emailForm/emailValidationForm';
 import {
+  advisoryUserExcelUploadDto,
   changePasswordUserDto,
   createAdminUserDto,
   createUserDto,
@@ -24,7 +30,7 @@ import {
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as bcrypt from 'bcrypt';
 import findUserPasswordForm from '../module/emailForm/findUserPasswordForm';
-import * as XLSX from 'xlsx';
+import { query } from 'express';
 
 @Injectable()
 export class UserService {
@@ -140,6 +146,39 @@ export class UserService {
     }
   }
 
+  async advisoryUserExcelUpload(data: Array<advisoryUserExcelUploadDto>) {
+    await Promise.all(
+      data.map(async ({ email }) => {
+        const user = await this.findByEmail(email);
+        if (user) {
+          throw new NotAcceptableException(
+            '',
+            `${email}은(는) 이미 가입된 이메일입니다.`,
+          );
+        }
+      }),
+    );
+
+    await getManager().transaction(async manager => {
+      try {
+        await Promise.all(
+          data.map(async advisory => {
+            const newUser = await this.userRepository.create({
+              ...advisory,
+              password: randomStringGenerator(),
+              type: Code.ADVISORY,
+            });
+            await manager.save(newUser);
+          }),
+        );
+      } catch (e) {
+        throw new NotAcceptableException('', e.message);
+      }
+    });
+
+    return responseCreated();
+  }
+
   async create(data: createUserDto) {
     const { email, code, type } = data;
 
@@ -156,13 +195,13 @@ export class UserService {
       return responseNotAcceptable('올바른 이메일 형식이 아닙니다.');
     }
 
+    if (type === Code.ADVISORY) {
+      return await this.createAdvisoryUser(data);
+    }
+
     const hasEmail = await this.hasEmail(email);
     if (hasEmail) {
       return responseNotAcceptable('이미 가입 중인 이메일입니다.');
-    }
-
-    if (type === Code.ADVISORY) {
-      return await this.createAdvisoryUser(data);
     }
 
     if (type === Code.ORGANIZATION) {
@@ -256,9 +295,29 @@ export class UserService {
     return await this.createUser(type, data);
   }
 
-  async createAdvisoryUser(data: createUserDto) {
-    const type = Code.ADVISORY;
-    return await this.createUser(type, data);
+  async createAdvisoryUser({ email, password: newPassword }: createUserDto) {
+    const user = await this.findByEmail(email);
+    if (!user) {
+      return responseNotAcceptable('등록된 자문단 정보가 없습니다.');
+    }
+
+    if (user.updatedAt) {
+      return responseNotAcceptable('이미 가입되었습니다.');
+    }
+
+    try {
+      const password = await user.changePassword(newPassword);
+
+      await this.userRepository
+        .createQueryBuilder()
+        .update({ password })
+        .where('email = :email', { email })
+        .execute();
+
+      return responseCreated();
+    } catch (e) {
+      return responseNotAcceptable(e.message);
+    }
   }
 
   async createUser(type: number, data: createUserDto) {
@@ -316,6 +375,28 @@ export class UserService {
       .andWhere('u.status = :act')
       .setParameters({ userId, act: Code.ACT })
       .getOne();
+  }
+
+  async advisoryEmailValidation(email: string) {
+    const isEmailForm = await this.isEmailForm(email);
+    if (!isEmailForm) {
+      return responseNotAcceptable('올바른 이메일 형식이 아닙니다.');
+    }
+    const hasEmail = await this.hasEmail(email);
+    if (!hasEmail) {
+      return responseNotAcceptable('등록된 자문단 정보가 없습니다.');
+    }
+
+    const {
+      statusCode,
+      data,
+      message,
+    } = await this.emailValidationLogService.create(email);
+    if (statusCode !== HttpStatus.OK) {
+      return responseNotAcceptable(message);
+    }
+
+    return await this.sendEmailValidationCode(data.email, data.code);
   }
 
   async emailValidation(email: string) {

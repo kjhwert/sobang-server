@@ -11,11 +11,14 @@ import {
   Put,
   Header,
   Res,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LocalAuthGuard } from '../auth/strategy/local-auth.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import {
+  advisoryUserExcelUploadDto,
   changePasswordUserDto,
   createAdminUserDto,
   createUserDto,
@@ -31,6 +34,8 @@ import * as XLSX from 'xlsx';
 import { Code } from '../module/entities/code.entity';
 import { User } from '../module/entities/user/user.entity';
 import { responseNotAcceptable } from '../module/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { apiBodyOptions } from '../module/file-upload.utils';
 
 @ApiTags('user')
 @Controller('user')
@@ -79,6 +84,11 @@ export class UserController {
   @Get('email-validation')
   emailValidation(@Query() { email }: emailValidationDto) {
     return this.userService.emailValidation(email);
+  }
+
+  @Get('advisory-email-validation')
+  advisoryEmailValidation(@Query() { email }: emailValidationDto) {
+    return this.userService.advisoryEmailValidation(email);
   }
 
   @Get('find-email')
@@ -152,24 +162,51 @@ export class UserController {
 
     // step 1. workbook 생성
     const wb = XLSX.utils.book_new();
-
     // step 2. 시트 만들기
     const newWorksheet = XLSX.utils.json_to_sheet(users);
-
     // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.
     XLSX.utils.book_append_sheet(wb, newWorksheet, '연락처');
-
     // step 4. 파일을 생성한다. (메모리에만 저장)
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
-
     // step 5. 파일을 response 한다.
     res.end(Buffer.from(wbout, 'base64'));
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)
-  @Get('excel-upload-advisory')
-  async excelUploadAdvisory() {}
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody(apiBodyOptions)
+  @Post('excel-upload-advisory')
+  async excelUploadAdvisory(@UploadedFile() file) {
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+
+    // 첫번째 sheet 의 이름을 조회합니다.
+    const sheetName = workbook.SheetNames[0];
+    // 첫번째 sheet 를 사용합니다.
+    const sheet = workbook.Sheets[sheetName];
+
+    const rows: Array<advisoryUserExcelUploadDto> = XLSX.utils.sheet_to_json(
+      sheet,
+      {
+        header: [
+          'type',
+          'name',
+          'department',
+          'position',
+          'email',
+          'advisoryCareer',
+          'fieldCareer',
+          'career',
+          'group',
+        ],
+        range: 1,
+        defval: null,
+      },
+    );
+
+    return this.userService.advisoryUserExcelUpload(rows);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtAdminGuard)

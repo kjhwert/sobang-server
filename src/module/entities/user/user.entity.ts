@@ -2,6 +2,7 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -26,24 +27,24 @@ export class User extends CommonEntity {
   @Column({ length: 100 })
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '자문단 회원명' })
   @IsString()
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 50, nullable: true, comment: '자문단 회원명' })
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '기관명' })
   @IsString()
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 50, nullable: true, comment: '기관명' })
   businessName: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '대표자명' })
   @IsString()
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 50, nullable: true, comment: '대표자명' })
   businessOwner: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '사업자 번호' })
   @IsString()
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 50, nullable: true, comment: '사업자 번호' })
   businessNo: string;
 
   @ApiProperty({ description: '소속' })
@@ -55,6 +56,26 @@ export class User extends CommonEntity {
   @IsString()
   @Column({ length: 50, nullable: true, comment: '직위' })
   position: string;
+
+  @ApiProperty({ description: '자문지원 경력' })
+  @IsString()
+  @Column({ length: 50, comment: '자문지원 경력' })
+  advisoryCareer: string;
+
+  @ApiProperty({ description: '주요 현장대응 경력' })
+  @IsString()
+  @Column({ length: 50, comment: '주요 현장대응 경력' })
+  fieldCareer: string;
+
+  @ApiProperty({ description: '연차' })
+  @IsString()
+  @Column({ length: 50, comment: '연차' })
+  career: string;
+
+  @ApiProperty({ description: '그룹(베테랑/일반)' })
+  @IsString()
+  @Column({ length: 50, comment: '그룹(베테랑/일반)' })
+  group: string;
 
   @ManyToOne(
     () => Code,

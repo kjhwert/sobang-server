@@ -2,6 +2,17 @@ import { User } from '../entities/user/user.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
+export class advisoryUserExcelUploadDto extends PickType(User, [
+  'email',
+  'name',
+  'department',
+  'position',
+  'advisoryCareer',
+  'fieldCareer',
+  'career',
+  'group',
+]) {}
+
 export class changePasswordUserDto {
   @ApiProperty()
   @IsString()
@@ -133,6 +144,60 @@ export class createUserDto {
   @IsString()
   @IsOptional()
   name?: string; // 자문단 회원
+
+  @ApiProperty({
+    required: false,
+    format: '직위',
+    description: '자문단 회원 직위',
+  })
+  @IsString()
+  @IsOptional()
+  position?: string;
+
+  @ApiProperty({
+    required: false,
+    format: '자문단 소속',
+    description: '자문단 회원 소속',
+  })
+  @IsString()
+  @IsOptional()
+  department?: string;
+
+  @ApiProperty({
+    required: false,
+    format: '자문단 회원',
+    description: '자문단 회원 자문지원 경력',
+  })
+  @IsString()
+  @IsOptional()
+  advisoryCareer?: string;
+
+  @ApiProperty({
+    required: false,
+    format: '자문단 회원',
+    description: '자문단 회원 현장대응 경력',
+  })
+  @IsString()
+  @IsOptional()
+  fieldCareer?: string;
+
+  @ApiProperty({
+    required: false,
+    format: '자문단 회원',
+    description: '자문단 회원 연차',
+  })
+  @IsString()
+  @IsOptional()
+  career?: string;
+
+  @ApiProperty({
+    required: false,
+    format: '자문단 회원',
+    description: '자문단 회원 그룹(베테랑/일반)',
+  })
+  @IsString()
+  @IsOptional()
+  group?: string;
 
   /**
    * 기관회원
