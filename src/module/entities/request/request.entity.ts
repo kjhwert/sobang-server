@@ -8,6 +8,7 @@ import { Code } from '../code.entity';
 import { TestCode } from '../test-code.entity';
 import { User } from '../user/user.entity';
 import { TrainingCenter } from '../training-center.entity';
+import { TrainingCenterGroup } from '../training-center-group.entity';
 
 @Entity()
 export class Request extends CommonEntity {
@@ -148,7 +149,7 @@ export class Request extends CommonEntity {
   @ApiProperty()
   @IsNumber()
   @ManyToOne(
-    () => TrainingCenter,
+    () => TrainingCenterGroup,
     center => center.id,
   )
   trainingCenter: number;
