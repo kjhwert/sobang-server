@@ -20,6 +20,11 @@ export class acceptRequestDto {
   @IsNumber()
   testCodeId: number;
 
+  @ApiProperty({ description: '테스트 유형기타', required: false })
+  @IsString()
+  @IsOptional()
+  testCodeDescription?: string;
+
   @ApiProperty({ description: '테스트 시작 날짜' })
   @IsString()
   responseStartDate: string;
