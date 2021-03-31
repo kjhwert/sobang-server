@@ -6,15 +6,17 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../module/entities/user/user.entity';
-import { Brackets, getConnection, getManager, Repository } from 'typeorm';
+import { Brackets, getManager, Repository } from 'typeorm';
 import { Code } from '../module/entities/code.entity';
 import {
   pagination,
+  PER_PAGE,
   responseCreated,
   responseDestroyed,
   responseNotAcceptable,
   responseOk,
   responseUpdated,
+  SKIP_PAGE,
 } from '../module/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { EmailValidationLogService } from '../email/validation-log/email-validation-log.service';
@@ -30,7 +32,6 @@ import {
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as bcrypt from 'bcrypt';
 import findUserPasswordForm from '../module/emailForm/findUserPasswordForm';
-import { query } from 'express';
 
 @Injectable()
 export class UserService {
@@ -66,6 +67,8 @@ export class UserService {
         ),
       )
       .setParameters({ type, name: `%${name}%`, act: Code.ACT })
+      .offset(SKIP_PAGE(page))
+      .limit(PER_PAGE)
       .getRawMany();
 
     return responseOk(data, paging);
