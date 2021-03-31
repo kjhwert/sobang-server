@@ -9,14 +9,13 @@ import { FaqModule } from './faq/faq.module';
 import { DevelopmentOpinionModule } from './development-opinion/development-opinion.module';
 import { NoticeModule } from './notice/notice.module';
 import { TestOperationModule } from './test-operation/test-operation.module';
-import { FormAdminModule } from './form-admin/form-admin.module';
-import { FormSatisfactionModule } from './form-satisfaction/form-satisfaction.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { NavigationModule } from './navigation/navigation.module';
 import { TestCodeModule } from './test-code/test-code.module';
 import { TrainingCenterModule } from './training-center/training-center.module';
+import { FormManageModule } from './form-manage/form-manage.module';
 
 @Module({
   imports: [
@@ -45,12 +44,11 @@ import { TrainingCenterModule } from './training-center/training-center.module';
     DevelopmentOpinionModule,
     NoticeModule,
     TestOperationModule,
-    FormAdminModule,
-    FormSatisfactionModule,
     AuthModule,
     NavigationModule,
     TestCodeModule,
     TrainingCenterModule,
+    FormManageModule,
   ],
   controllers: [AppController],
 })

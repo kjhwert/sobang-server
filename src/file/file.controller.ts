@@ -61,4 +61,26 @@ export class FileController {
 
     return this.fileService.create(user.id, data);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @UseInterceptors(
+    FileInterceptor('file', fileLocalOptions('./public/form-manage')),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody(apiBodyOptions)
+  @Post('form-manage')
+  formManageCreate(
+    @UploadedFile() { mimetype, originalname, path, size },
+    @Request() { user },
+  ) {
+    const data = {
+      name: originalname,
+      type: mimetype,
+      path,
+      size,
+    };
+
+    return this.fileService.create(user.id, data);
+  }
 }

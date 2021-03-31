@@ -7,6 +7,7 @@ export class CommonEntity {
   @Column({ nullable: true, select: false })
   createdId: number;
 
+  //TODO 2020-10-10 03:03:03 으로 저장하도록
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
