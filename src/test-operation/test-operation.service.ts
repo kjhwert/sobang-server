@@ -73,11 +73,11 @@ export class TestOperationService {
     }
   }
 
-  async destroy(testOperationId: number) {
+  async destroy(adminId: number, testOperationId: number) {
     try {
       await this.testRepository
         .createQueryBuilder()
-        .update({ status: Code.DELETE })
+        .update({ status: Code.DELETE, updatedId: adminId })
         .where('id = :testOperationId', { testOperationId })
         .execute();
 

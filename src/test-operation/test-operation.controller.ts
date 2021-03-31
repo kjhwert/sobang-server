@@ -37,7 +37,10 @@ export class TestOperationController {
   }
 
   @Delete(':testOperationId')
-  destroy(@Param('testOperationId') testOperationId: number) {
-    return this.testOperationService.destroy(testOperationId);
+  destroy(
+    @Param('testOperationId') testOperationId: number,
+    @Request() { user },
+  ) {
+    return this.testOperationService.destroy(user.id, testOperationId);
   }
 }
