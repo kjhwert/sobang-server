@@ -27,7 +27,7 @@ export class FormManageService {
 
     const data = await this.formManageRepository
       .createQueryBuilder('m')
-      .innerJoinAndSelect('m.file', 'f')
+      .leftJoinAndSelect('m.file', 'f')
       .where('m.status = :act', { act: Code.ACT })
       .orderBy('m.id', 'DESC')
       .skip(SKIP_PAGE(page))

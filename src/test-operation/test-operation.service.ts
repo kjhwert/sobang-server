@@ -53,9 +53,10 @@ export class TestOperationService {
 
   async show(testOperationId: number) {
     const data = await this.testRepository
-      .createQueryBuilder()
-      .where('id = :testOperationId')
-      .andWhere('status = :act')
+      .createQueryBuilder('t')
+      .leftJoinAndSelect('t.file', 'f')
+      .where('t.id = :testOperationId')
+      .andWhere('t.status = :act')
       .setParameters({ testOperationId, act: Code.ACT })
       .getOne();
 
