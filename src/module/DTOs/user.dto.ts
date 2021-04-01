@@ -37,13 +37,23 @@ export class indexUserDto {
   @IsString()
   type: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
   @IsString()
   page: number;
+
+  @ApiProperty({
+    description: '자문단 가입유무',
+    required: false,
+    enum: ['all', 'joined', 'notJoined'],
+  })
+  @IsString()
+  @IsOptional()
+  advisory?: 'all' | 'joined' | 'notJoined';
 }
 
 export class loginUserDto extends PickType(User, ['email', 'password']) {}

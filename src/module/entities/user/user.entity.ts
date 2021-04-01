@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { CommonEntity } from '../common.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 import { Code } from '../code.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -76,6 +76,11 @@ export class User extends CommonEntity {
   @IsString()
   @Column({ length: 50, comment: '그룹(베테랑/일반)' })
   group: string;
+
+  @ApiProperty({ description: '자문단 회원가입 유무' })
+  @IsBoolean()
+  @Column({ type: 'boolean', default: () => false })
+  isAdvisoryJoined: boolean;
 
   @ManyToOne(
     () => Code,

@@ -52,6 +52,9 @@ export class UserController {
   @UseGuards(JwtAdminGuard)
   @Get()
   index(@Query() data: indexUserDto) {
+    if (Number(data.type) === Code.ADVISORY) {
+      return this.userService.advisoryIndex(data);
+    }
     return this.userService.index(data);
   }
 

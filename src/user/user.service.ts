@@ -75,8 +75,8 @@ export class UserService {
     return responseOk(data, paging);
   }
 
-  getIndexCount(type: number, name: string) {
-    return this.userRepository
+  async getIndexCount(type: number, name: string) {
+    return await this.userRepository
       .createQueryBuilder()
       .where('status = :act')
       .andWhere('typeId = :type')
@@ -86,6 +86,58 @@ export class UserService {
         ),
       )
       .setParameters({ type, name: `%${name}%`, act: Code.ACT })
+      .getCount();
+  }
+
+  async advisoryIndex({ page, name, advisory }: indexUserDto) {
+    const total = await this.getAdvisoryIndexCount(name);
+    const paging = await pagination(page, total);
+
+    const advisorySubQuery = this.getAdvisoryWhereQuery(advisory);
+    const data = await this.userRepository
+      .createQueryBuilder()
+      .select([
+        'id',
+        'email',
+        'name',
+        'businessName',
+        'businessOwner',
+        'businessNo',
+        'department',
+        'position',
+        'createdAt',
+        'updatedAt',
+      ])
+      .where('status = :act')
+      .andWhere(advisorySubQuery)
+      .andWhere(new Brackets(qb => qb.orWhere('name like :name')))
+      .setParameters({ name: `%${name}%`, act: Code.ACT })
+      .orderBy('id', 'DESC')
+      .offset(SKIP_PAGE(page))
+      .limit(PER_PAGE)
+      .getRawMany();
+
+    return responseOk(data, paging);
+  }
+
+  getAdvisoryWhereQuery(advisory: string) {
+    switch (advisory) {
+      case 'all':
+        return '1=1';
+      case 'joined':
+        return 'isAdvisoryJoined = true';
+      case 'notJoined':
+        return 'isAdvisoryJoined = false';
+    }
+  }
+
+  async getAdvisoryIndexCount(name: string) {
+    return await this.userRepository
+      .createQueryBuilder()
+      .where('status = :act')
+      .andWhere('typeId = :type')
+      .andWhere(new Brackets(qb => qb.orWhere('name like :name')))
+      .setParameters({ act: Code.ACT, type: Code.ADVISORY, name })
       .getCount();
   }
 
@@ -305,7 +357,7 @@ export class UserService {
       return responseNotAcceptable('등록된 자문단 정보가 없습니다.');
     }
 
-    if (user.updatedAt) {
+    if (user.isAdvisoryJoined) {
       return responseNotAcceptable('이미 가입되었습니다.');
     }
 
@@ -314,7 +366,7 @@ export class UserService {
 
       await this.userRepository
         .createQueryBuilder()
-        .update({ password })
+        .update({ password, isAdvisoryJoined: true })
         .where('email = :email', { email })
         .execute();
 
