@@ -65,6 +65,14 @@ export class RequestOpinionService {
     }
   }
 
+  isUserRegisteredOpinionSubQuery() {
+    return this.requestOpinionRepository
+      .createQueryBuilder()
+      .select(['id', 'requestId', 'userId'])
+      .where('userId = :userId')
+      .getQuery();
+  }
+
   async getOpinionsByRequestId(requestId: number) {
     return this.requestOpinionRepository
       .createQueryBuilder()

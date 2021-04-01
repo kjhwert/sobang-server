@@ -28,6 +28,7 @@ export class RequestAdvisoryService {
     const total = await this.getIndexCount(userId);
     const paging = await pagination(page, total);
     const opinionCountSubQuery = await this.requestOpinionService.getOpinionsCountByRequestId();
+    const userRegisteredOpinionSubQuery = await this.requestOpinionService.isUserRegisteredOpinionSubQuery();
 
     if (process === Code.PROCESS_ALL) {
       const data = await this.requestAdvisoryRepository
@@ -38,12 +39,20 @@ export class RequestAdvisoryService {
           'p.id processId',
           'p.description processName',
           'r.requestStartDate requestStartDate',
+          'r.responseStartDate responseStartDate',
+          'r.responseEndDate responseEndDate',
           'r.createdAt createdAt',
+          'if(ur.id is not null, true, false) isOpinionRegistered',
           'ifnull(o.cnt,0) opinionCount',
         ])
         .innerJoin('a.request', 'r')
         .innerJoin('r.process', 'p')
         .leftJoin(`(${opinionCountSubQuery})`, 'o', 'r.id = o.requestId')
+        .leftJoin(
+          `(${userRegisteredOpinionSubQuery})`,
+          'ur',
+          'r.id = ur.requestId',
+        )
         .where('a.userId = :userId')
         .andWhere('r.status = :act')
         .setParameters({ userId, act: Code.ACT })
@@ -60,12 +69,20 @@ export class RequestAdvisoryService {
         'p.id processId',
         'p.description processName',
         'r.requestStartDate requestStartDate',
+        'r.responseStartDate responseStartDate',
+        'r.responseEndDate responseEndDate',
         'r.createdAt createdAt',
+        'if(ur.id is not null, true, false) isOpinionRegistered',
         'ifnull(o.cnt,0) opinionCount',
       ])
       .innerJoin('a.request', 'r')
       .innerJoin('r.process', 'p')
       .leftJoin(`(${opinionCountSubQuery})`, 'o', 'r.id = o.requestId')
+      .leftJoin(
+        `(${userRegisteredOpinionSubQuery})`,
+        'ur',
+        'r.id = ur.requestId',
+      )
       .where('a.userId = :userId')
       .andWhere('r.status = :act')
       .andWhere('r.process = :process')
