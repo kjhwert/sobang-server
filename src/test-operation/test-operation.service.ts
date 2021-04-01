@@ -52,12 +52,14 @@ export class TestOperationService {
   }
 
   async show(testOperationId: number) {
-    return await this.testRepository
+    const data = await this.testRepository
       .createQueryBuilder()
       .where('id = :testOperationId')
       .andWhere('status = :act')
       .setParameters({ testOperationId, act: Code.ACT })
       .getOne();
+
+    return responseOk(data);
   }
 
   async create(adminId: number, data: createTestOperationDto) {
