@@ -4,6 +4,9 @@ import {
   UseGuards,
   UseInterceptors,
   Request,
+  Get,
+  Res,
+  Param,
 } from '@nestjs/common';
 import { FileService } from './file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -12,11 +15,21 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtOrganizationGuard } from '../auth/jwt/jwt-organization.guard';
 import { UploadedFile } from '@nestjs/common';
 import { JwtAdminGuard } from '../auth/jwt/jwt-admin.guard';
+import { downloadFileDto } from '../module/DTOs/file.dto';
 
 @ApiTags('file')
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAdminGuard)
+  @Get(':type/:fileId')
+  async downloadFile(@Param() { type, fileId }: downloadFileDto, @Res() res) {
+    const { path, name } = await this.fileService.show(fileId);
+    res.download(path, name);
+    // console.log(path);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtOrganizationGuard)

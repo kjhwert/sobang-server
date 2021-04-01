@@ -14,6 +14,13 @@ export class FileService {
     private fileRepository: Repository<FileEntity>,
   ) {}
 
+  async show(fileId: number): Promise<FileEntity> {
+    return this.fileRepository
+      .createQueryBuilder()
+      .where('id = :fileId', { fileId })
+      .getOne();
+  }
+
   async create(userId: number, data: createFileDto) {
     try {
       const newFile = await this.fileRepository.create({
