@@ -49,8 +49,8 @@ export class RequestController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':requestId')
-  show(@Param('requestId') requestId: number) {
-    return this.requestService.show(requestId);
+  show(@Param('requestId') requestId: number, @Request() { user }) {
+    return this.requestService.show(user.id, requestId);
   }
 
   @ApiBearerAuth()

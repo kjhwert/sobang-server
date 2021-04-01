@@ -160,7 +160,9 @@ export class RequestService {
     return this.requestAdvisoryService.index(userId, query);
   }
 
-  async show(requestId: number) {
+  async show(userId: number, requestId: number) {
+    const userRegisteredOpinionSubQuery = await this.requestOpinionService.isUserRegisteredOpinionSubQuery();
+
     const data = await this.requestRepository
       .createQueryBuilder('r')
       .select([
@@ -192,15 +194,21 @@ export class RequestService {
         'u.businessName businessName',
         'u.businessOwner businessOwner',
         'u.businessNo businessNo',
+        'if(ur.id is not null, true, false) isOpinionRegistered',
       ])
       .leftJoin('r.file', 'f')
       .leftJoin('r.testCode', 't')
+      .leftJoin(
+        `(${userRegisteredOpinionSubQuery})`,
+        'ur',
+        'r.id = ur.requestId',
+      )
       .innerJoin('r.process', 'p')
       .innerJoin('r.user', 'u')
       .leftJoin('r.trainingCenter', 'c')
       .where('r.id = :requestId')
       .andWhere('r.status = :act')
-      .setParameters({ requestId, act: Code.ACT })
+      .setParameters({ requestId, act: Code.ACT, userId })
       .getRawOne();
 
     const opinions = await this.requestOpinionService.getOpinionsByRequestId(
