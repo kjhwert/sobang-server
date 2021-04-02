@@ -147,11 +147,26 @@ export class UserController {
       case Code.ADVISORY:
         const advisoryUsers = await this.userService.getAllUsersByType(type);
         users = advisoryUsers.map(
-          ({ email, position, department, createdAt }: User) => {
+          ({
+            email,
+            name,
+            position,
+            department,
+            createdAt,
+            advisoryCareer,
+            fieldCareer,
+            career,
+            group,
+          }: User) => {
             return {
               이메일: email,
+              이름: name,
               소속: department,
               직위: position,
+              '자문지원 경력': advisoryCareer,
+              '주요 현장대응 경력': fieldCareer,
+              연차: career,
+              그룹: group,
               등록일자: createdAt,
             };
           },

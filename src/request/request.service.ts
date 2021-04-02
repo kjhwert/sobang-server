@@ -187,6 +187,7 @@ export class RequestService {
         'r.refuseDescription refuseDescription',
         'r.responseStartDate responseStartDate',
         'r.responseEndDate responseEndDate',
+        'f.id fileId',
         'f.name fileName',
         'f.path filePath',
         't.id testCodeId',
