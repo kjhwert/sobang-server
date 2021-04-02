@@ -16,5 +16,6 @@ export const swaggerOptions = new DocumentBuilder()
   .addTag('training-center', '훈련시설')
   .addTag('form-manage', '서식 자료실')
   .addTag('test-operation', '시범 운영관리')
+  .addTag('equipment', '장비분류코드')
   .addTag('file', '첨부파일')
   .build();

@@ -16,6 +16,7 @@ import { NavigationModule } from './navigation/navigation.module';
 import { TestCodeModule } from './test-code/test-code.module';
 import { TrainingCenterModule } from './training-center/training-center.module';
 import { FormManageModule } from './form-manage/form-manage.module';
+import { EquipmentModule } from './equipment/equipment.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { FormManageModule } from './form-manage/form-manage.module';
     TestCodeModule,
     TrainingCenterModule,
     FormManageModule,
+    EquipmentModule,
   ],
   controllers: [AppController],
 })

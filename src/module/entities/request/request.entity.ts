@@ -2,12 +2,11 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { CommonEntity } from '../common.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
-import { EquipmentCode } from '../equipment-code.entity';
+import { Equipment } from '../equipment.entity';
 import { FileEntity } from '../file.entity';
 import { Code } from '../code.entity';
 import { TestCode } from '../test-code.entity';
 import { User } from '../user/user.entity';
-import { TrainingCenter } from '../training-center.entity';
 import { TrainingCenterGroup } from '../training-center-group.entity';
 
 @Entity()
@@ -18,7 +17,7 @@ export class Request extends CommonEntity {
   @ApiProperty()
   @IsNumber()
   @ManyToOne(
-    () => EquipmentCode,
+    () => Equipment,
     eq => eq.id,
   )
   equipment: number;
