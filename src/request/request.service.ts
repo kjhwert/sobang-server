@@ -52,9 +52,11 @@ export class RequestService {
           'ifnull(o.cnt,0) opinionCount',
           'u.businessName businessName',
           'u.businessOwner businessOwner',
+          'e.group4 equipmentCode',
         ])
         .innerJoin('r.user', 'u')
         .innerJoin('r.process', 'p')
+        .leftJoin('r.equipment', 'e')
         .leftJoin(`(${opinionCountSubQuery})`, 'o', 'r.id = o.requestId')
         .where('r.status = :act')
         .setParameters({ act: Code.ACT })
@@ -76,9 +78,11 @@ export class RequestService {
         'ifnull(o.cnt,0) opinionCount',
         'u.businessName businessName',
         'u.businessOwner businessOwner',
+        'e.group4 equipmentCode',
       ])
       .innerJoin('r.user', 'u')
       .innerJoin('r.process', 'p')
+      .leftJoin('r.equipment', 'e')
       .leftJoin(`(${opinionCountSubQuery})`, 'o', 'r.id = o.requestId')
       .where('r.status = :act')
       .andWhere('r.process = :process')
@@ -195,6 +199,7 @@ export class RequestService {
         'u.businessOwner businessOwner',
         'u.businessNo businessNo',
         'if(ur.id is not null, true, false) isOpinionRegistered',
+        'e.group4 equipmentCode',
       ])
       .leftJoin('r.file', 'f')
       .leftJoin('r.testCode', 't')
@@ -203,6 +208,7 @@ export class RequestService {
         'ur',
         'r.id = ur.requestId',
       )
+      .leftJoin('r.equipment', 'e')
       .innerJoin('r.process', 'p')
       .innerJoin('r.user', 'u')
       .leftJoin('r.trainingCenter', 'c')
