@@ -24,6 +24,7 @@ import {
 import { Code } from '../module/entities/code.entity';
 import { RequestOpinionService } from './request-opinion.service';
 import { RequestAdvisoryService } from './request-advisory.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class RequestService {
@@ -31,6 +32,7 @@ export class RequestService {
     @InjectRepository(Request) private requestRepository: Repository<Request>,
     private readonly requestOpinionService: RequestOpinionService,
     private readonly requestAdvisoryService: RequestAdvisoryService,
+    private readonly userService: UserService,
   ) {}
 
   async adminIndex({ process, page }: indexRequestDto) {
@@ -218,9 +220,20 @@ export class RequestService {
       .setParameters({ requestId, act: Code.ACT, userId })
       .getRawOne();
 
-    const opinions = await this.requestOpinionService.getOpinionsByRequestId(
-      requestId,
-    );
+    const isAdmin = await this.userService.isAdmin(userId);
+
+    let opinions = null;
+
+    if (isAdmin) {
+      opinions = await this.requestOpinionService.getOpinionsAdminByRequestId(
+        requestId,
+      );
+    } else {
+      opinions = await this.requestOpinionService.getOpinionsByRequestId(
+        requestId,
+      );
+    }
+
     return responseOk({ ...data, opinions });
   }
 

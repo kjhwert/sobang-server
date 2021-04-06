@@ -183,6 +183,18 @@ export class UserService {
     return responseOk(data);
   }
 
+  async isAdmin(userId: number) {
+    const {
+      // @ts-ignore
+      type: { id },
+    } = await this.findById(userId);
+    if (id === Code.ADMIN) {
+      return true;
+    }
+
+    return false;
+  }
+
   async createAdmin(adminId: number, data: createAdminUserDto) {
     const hasEmail = await this.hasEmail(data.email);
     if (hasEmail) {

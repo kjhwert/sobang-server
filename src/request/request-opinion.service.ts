@@ -80,6 +80,20 @@ export class RequestOpinionService {
       .getMany();
   }
 
+  async getOpinionsAdminByRequestId(requestId: number) {
+    return this.requestOpinionRepository
+      .createQueryBuilder('o')
+      .select([
+        'o.id id',
+        'o.description description',
+        'o.createdAt createdAt',
+        'u.name name',
+      ])
+      .innerJoin('o.user', 'u')
+      .where('o.requestId = :requestId', { requestId })
+      .getRawMany();
+  }
+
   getOpinionsCountByRequestId() {
     return this.requestOpinionRepository
       .createQueryBuilder()
